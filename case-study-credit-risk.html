@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credit Risk Command Center — Kartik Mankar PM Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #030d1a;
+      --bg2: #060f1e;
+      --navy: #0a1628;
+      --accent: #8b5cf6;
+      --accent2: #a78bfa;
+      --accent-light: rgba(139,92,246,0.12);
+      --white: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+      --border: rgba(255,255,255,0.08);
+      --glass: rgba(255,255,255,0.03);
+      --glass2: rgba(255,255,255,0.06);
+      --danger: #f87171;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.7;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    h1,h2,h3,h4,h5 { font-family: 'Space Grotesk', sans-serif; line-height: 1.2; }
+    a { color: var(--accent2); text-decoration: none; transition: color var(--transition); }
+    a:hover { color: var(--white); }
+    img { max-width: 100%; display: block; }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+    /* ── PROGRESS BAR ── */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999; transition: width 0.1s linear;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 3px; left: 0; right: 0; z-index: 1000;
+      padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+      background: transparent;
+      transition: background var(--transition), backdrop-filter var(--transition), border-bottom var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(3,13,26,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .nav-logo-mark {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 800; font-size: 14px; color: white;
+      letter-spacing: -0.5px;
+    }
+    .nav-logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600; font-size: 15px; color: var(--white);
+    }
+    .nav-framework {
+      display: flex; align-items: center; gap: 4px;
+      flex: 1; justify-content: center; padding: 0 24px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .nav-framework::-webkit-scrollbar { display: none; }
+    .nav-step {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .nav-step:hover { color: var(--white); border-color: var(--border); }
+    .nav-step.active {
+      color: var(--accent2);
+      background: var(--accent-light);
+      border-color: rgba(139,92,246,0.3);
+    }
+    .nav-right { flex-shrink: 0; }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 500;
+      color: var(--muted);
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .nav-back:hover { color: var(--white); border-color: var(--accent); background: var(--accent-light); }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 120px 80px 80px;
+      position: relative;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: -200px; right: -200px;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -100px; left: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(139,92,246,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 900px; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+      color: var(--accent2);
+      margin-bottom: 28px;
+      letter-spacing: 0.3px;
+    }
+    .hero-tag span { color: var(--muted); }
+    .hero-title {
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: 20px; font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: 24px;
+      margin-bottom: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .hero-meta-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+    .hero-meta-value { font-size: 14px; font-weight: 500; color: var(--white); }
+    .hero-problem {
+      font-size: 17px; color: rgba(255,255,255,0.65);
+      margin-bottom: 48px;
+      max-width: 700px;
+      line-height: 1.7;
+    }
+    .hero-metrics {
+      display: flex; flex-wrap: wrap; gap: 16px;
+    }
+    .hero-metric-card {
+      background: var(--glass2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      min-width: 160px;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+    .hero-metric-card::before {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0.6;
+    }
+    .hero-metric-card:hover {
+      background: var(--accent-light);
+      border-color: rgba(139,92,246,0.3);
+      transform: translateY(-2px);
+    }
+    .hero-metric-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--accent2);
+      display: block; margin-bottom: 4px;
+    }
+    .hero-metric-label {
+      font-size: 12px; color: var(--muted); line-height: 1.4;
+    }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: 100px 80px;
+      position: relative;
+    }
+    section:nth-child(even) { background: var(--bg2); }
+    section:nth-child(odd) { background: var(--bg); }
+    .section-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-number::after {
+      content: '';
+      display: block;
+      width: 40px; height: 1px;
+      background: var(--accent);
+      opacity: 0.4;
+    }
+    .section-heading {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 48px;
+      color: var(--white);
+      max-width: 700px;
+    }
+    .section-heading em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      transition: all var(--transition);
+    }
+    .card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .card-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: 20px; }
+    .card-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 20px; }
+    .card-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 20px; }
+    .card-icon {
+      width: 44px; height: 44px;
+      background: var(--accent-light);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 16px;
+    }
+    .card-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--accent2); text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px; font-weight: 600;
+      color: var(--white); margin-bottom: 10px;
+    }
+    .card-body { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── PROBLEM FLOW ── */
+    .flow-diagram {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 0; margin: 40px 0;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      overflow-x: auto;
+    }
+    .flow-step {
+      display: flex; align-items: center;
+    }
+    .flow-node {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+      white-space: nowrap;
+      background: var(--glass2);
+      border: 1px solid var(--border);
+      color: rgba(255,255,255,0.7);
+      transition: all var(--transition);
+    }
+    .flow-node.bottleneck {
+      background: rgba(248,113,113,0.12);
+      border-color: rgba(248,113,113,0.35);
+      color: var(--danger);
+      font-weight: 600;
+      position: relative;
+    }
+    .flow-node.bottleneck::after {
+      content: 'BOTTLENECK';
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--danger); opacity: 0.8;
+    }
+    .flow-arrow {
+      font-size: 18px; color: var(--muted);
+      margin: 0 10px;
+    }
+    .flow-label {
+      font-size: 11px; color: var(--muted);
+      margin-top: 6px; text-align: center;
+    }
+
+    /* ── EVIDENCE CALLOUT ── */
+    .callout {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 18px 22px;
+      border-radius: var(--radius-sm);
+      margin: 24px 0;
+    }
+    .callout-info {
+      background: rgba(96,165,250,0.08);
+      border: 1px solid rgba(96,165,250,0.2);
+    }
+    .callout-warning {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.2);
+    }
+    .callout-accent {
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.25);
+    }
+    .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .callout-text { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+    .callout-text strong { color: var(--white); font-weight: 600; }
+
+    /* ── USER CARDS ── */
+    .user-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+    .user-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .user-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.3);
+    }
+    .user-avatar {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; margin-bottom: 18px;
+    }
+    .user-role {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px; font-weight: 600; color: var(--white);
+      margin-bottom: 6px;
+    }
+    .user-context { font-size: 13px; color: var(--accent2); margin-bottom: 20px; font-weight: 500; }
+    .user-pain, .user-goal {
+      display: flex; gap: 10px; margin-bottom: 10px;
+      font-size: 14px; line-height: 1.5;
+    }
+    .user-pain-label, .user-goal-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      padding: 2px 8px; border-radius: 4px; white-space: nowrap; margin-top: 2px;
+      flex-shrink: 0;
+    }
+    .user-pain-label { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+    .user-goal-label { background: rgba(52,211,153,0.1); color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+
+    /* ── INSIGHT BOX ── */
+    .insight-main {
+      background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(167,139,250,0.06));
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: var(--radius);
+      padding: 40px 48px;
+      margin-bottom: 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .insight-main::before {
+      content: '"';
+      position: absolute; top: -20px; left: 20px;
+      font-size: 140px; font-family: 'Space Grotesk', sans-serif;
+      color: rgba(139,92,246,0.08); line-height: 1;
+      pointer-events: none;
+    }
+    .insight-main-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(18px, 2.5vw, 22px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.88);
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── OPPORTUNITY ── */
+    .opportunity-statement {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 32px 36px;
+      margin-bottom: 28px;
+      font-size: 17px;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.7;
+    }
+    .opportunity-size {
+      background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(167,139,250,0.04));
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: var(--radius-sm);
+      padding: 20px 24px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+
+    /* ── PRIORITIZATION TABLE ── */
+    .prio-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .prio-table th {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted);
+      padding: 14px 20px; text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .prio-table td {
+      padding: 16px 20px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.8);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .prio-table tr:last-child td { border-bottom: none; }
+    .prio-table tr:hover td { background: var(--glass); }
+    .prio-table .feature-name { font-weight: 500; color: var(--white); }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-high { background: rgba(52,211,153,0.12); color: var(--success); border: 1px solid rgba(52,211,153,0.25); }
+    .badge-medium { background: rgba(251,191,36,0.1); color: var(--warning); border: 1px solid rgba(251,191,36,0.2); }
+    .badge-low { background: rgba(248,113,113,0.1); color: #fca5a5; border: 1px solid rgba(248,113,113,0.2); }
+    .badge-p0 { background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(167,139,250,0.15)); color: var(--accent2); border: 1px solid rgba(139,92,246,0.35); font-weight: 700; }
+    .badge-p1 { background: rgba(96,165,250,0.1); color: var(--info); border: 1px solid rgba(96,165,250,0.2); }
+    .badge-p2 { background: rgba(251,191,36,0.1); color: var(--warning); border: 1px solid rgba(251,191,36,0.2); }
+    .badge-p3 { background: var(--glass2); color: var(--muted); border: 1px solid var(--border); }
+    .table-wrapper {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .framework-note {
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: var(--radius-sm);
+      font-size: 13px; color: rgba(255,255,255,0.6);
+    }
+    .framework-note strong { color: var(--accent2); }
+
+    /* ── SOLUTION CAPABILITIES ── */
+    .capability-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .capability-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .capability-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.25);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .capability-card:hover::after { opacity: 1; }
+    .cap-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 40px; font-weight: 800;
+      color: rgba(139,92,246,0.15);
+      line-height: 1; margin-bottom: 12px;
+    }
+
+    /* ── PROTOTYPE SCREENS ── */
+    .screen-container {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 24px; margin-top: 8px;
+    }
+    .screen-card {
+      background: #0a1120;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all var(--transition);
+    }
+    .screen-card:hover {
+      border-color: rgba(139,92,246,0.3);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+      transform: translateY(-4px);
+    }
+    .screen-titlebar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--navy);
+      border-bottom: 1px solid var(--border);
+    }
+    .screen-dots { display: flex; gap: 5px; }
+    .screen-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+    }
+    .screen-dot-r { background: rgba(248,113,113,0.6); }
+    .screen-dot-y { background: rgba(251,191,36,0.6); }
+    .screen-dot-g { background: rgba(52,211,153,0.6); }
+    .screen-name {
+      font-size: 11px; color: var(--muted); font-weight: 500;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .screen-body { padding: 16px; min-height: 260px; }
+    .screen-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--accent2);
+      margin-bottom: 4px;
+    }
+    .screen-desc { font-size: 12px; color: var(--muted); margin-bottom: 14px; }
+
+    /* Application Queue mock */
+    .queue-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .queue-header-left { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 600; color: var(--white); }
+    .queue-header-right { font-size: 10px; color: var(--accent2); }
+    .queue-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px;
+      border-radius: 6px;
+      margin-bottom: 5px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      font-size: 11px;
+    }
+    .queue-row:first-of-type { border-color: rgba(139,92,246,0.25); background: var(--accent-light); }
+    .queue-app-id { font-weight: 600; color: var(--white); font-family: monospace; letter-spacing: 0.5px; }
+    .queue-name { color: rgba(255,255,255,0.6); }
+    .queue-amount { color: var(--accent2); font-weight: 500; }
+    .queue-score { padding: 2px 7px; border-radius: 10px; font-weight: 600; font-size: 10px; }
+    .score-green { background: rgba(52,211,153,0.15); color: var(--success); }
+    .score-yellow { background: rgba(251,191,36,0.12); color: var(--warning); }
+    .score-red { background: rgba(248,113,113,0.12); color: var(--danger); }
+    .queue-flag { font-size: 10px; color: var(--danger); }
+
+    /* Risk Profile mock */
+    .rp-grid { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 6px; height: 220px; }
+    .rp-panel {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px;
+      font-size: 10px;
+    }
+    .rp-panel-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 9px; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .rp-field { margin-bottom: 4px; }
+    .rp-field-label { color: var(--muted); font-size: 9px; }
+    .rp-field-val { color: var(--white); font-weight: 500; font-size: 10px; }
+    .rp-signal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .rp-signal-label { font-size: 9px; color: rgba(255,255,255,0.6); }
+    .rp-bar { height: 4px; border-radius: 2px; margin-top: 2px; }
+    .rp-bar-g { background: linear-gradient(90deg, var(--success), rgba(52,211,153,0.3)); }
+    .rp-bar-y { background: linear-gradient(90deg, var(--warning), rgba(251,191,36,0.3)); }
+    .rp-bar-r { background: linear-gradient(90deg, var(--danger), rgba(248,113,113,0.3)); }
+    .rp-decision-btn {
+      display: block; width: 100%;
+      padding: 5px; border-radius: 6px;
+      font-size: 9px; font-weight: 600; text-align: center;
+      margin-bottom: 4px; cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+    }
+    .rp-btn-approve { background: rgba(52,211,153,0.15); border: 1px solid rgba(52,211,153,0.3); color: var(--success); }
+    .rp-btn-reject { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); color: var(--danger); }
+    .rp-btn-hold { background: var(--glass2); border: 1px solid var(--border); color: var(--muted); }
+
+    /* Score Breakdown mock */
+    .sb-item { margin-bottom: 10px; }
+    .sb-header { display: flex; justify-content: space-between; margin-bottom: 3px; font-size: 10px; }
+    .sb-label { color: rgba(255,255,255,0.7); }
+    .sb-value { color: var(--white); font-weight: 600; }
+    .sb-track { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.06); overflow: hidden; }
+    .sb-fill { height: 100%; border-radius: 3px; }
+    .sb-fill-g { background: linear-gradient(90deg, var(--success), rgba(52,211,153,0.5)); }
+    .sb-fill-y { background: linear-gradient(90deg, var(--warning), rgba(251,191,36,0.5)); }
+    .sb-fill-r { background: linear-gradient(90deg, var(--danger), rgba(248,113,113,0.5)); }
+    .sb-fill-p { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+    /* ── METRICS ── */
+    .north-star-card {
+      background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(167,139,250,0.06));
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: var(--radius);
+      padding: 32px 40px;
+      margin-bottom: 36px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .north-star-card::before {
+      content: '';
+      position: absolute; top: -10px; right: 24px;
+      font-size: 80px; opacity: 0.06;
+    }
+    .north-star-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+      color: var(--accent2); margin-bottom: 12px;
+    }
+    .north-star-metric {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 700; color: var(--white);
+    }
+    .north-star-sub { font-size: 14px; color: var(--muted); margin-top: 8px; }
+    .metric-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: all var(--transition);
+    }
+    .metric-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+      transform: translateY(-2px);
+    }
+    .metric-card-label {
+      font-size: 12px; font-weight: 600;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+    .metric-card-target {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--accent2); margin-bottom: 6px;
+    }
+    .metric-card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* ── EXPERIMENT ── */
+    .experiment-phase {
+      display: flex; gap: 24px; margin-bottom: 20px;
+      padding: 24px 28px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .experiment-phase:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+    }
+    .experiment-phase::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--accent2));
+    }
+    .exp-phase-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 32px; font-weight: 800;
+      color: rgba(139,92,246,0.2);
+      line-height: 1; flex-shrink: 0; min-width: 36px;
+    }
+    .exp-phase-content { flex: 1; }
+    .exp-phase-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px; font-weight: 600; color: var(--white);
+      margin-bottom: 6px;
+    }
+    .exp-phase-time { font-size: 11px; color: var(--accent2); margin-bottom: 8px; font-weight: 500; }
+    .exp-phase-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+    .success-threshold {
+      margin-top: 28px;
+      padding: 22px 28px;
+      background: rgba(52,211,153,0.06);
+      border: 1px solid rgba(52,211,153,0.2);
+      border-radius: var(--radius-sm);
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .success-threshold-icon { font-size: 20px; }
+    .success-threshold-content { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+    .success-threshold-content strong { color: var(--success); }
+
+    /* ── RESULT ── */
+    .result-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 32px;
+      display: flex; gap: 20px; align-items: flex-start;
+      transition: all var(--transition);
+    }
+    .result-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+      transform: translateY(-2px);
+    }
+    .result-icon { font-size: 28px; flex-shrink: 0; }
+    .result-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 700; color: var(--accent2);
+      line-height: 1;
+    }
+    .result-label { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .learnings {
+      margin-top: 40px;
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 36px;
+    }
+    .learnings-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 600; color: var(--white);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .learning-item {
+      display: flex; gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .learning-item:last-child { border-bottom: none; }
+    .learning-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px; font-weight: 700; color: var(--accent);
+      flex-shrink: 0; min-width: 24px;
+    }
+    .learning-text { font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.6; }
+    .learning-text em { font-style: normal; color: var(--white); font-weight: 500; }
+
+    /* ── PM SKILLS TABLE ── */
+    .skills-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .skills-table th {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted);
+      padding: 16px 24px; text-align: left;
+      border-bottom: 1px solid var(--border);
+      background: rgba(139,92,246,0.04);
+    }
+    .skills-table td {
+      padding: 18px 24px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .skills-table td:first-child {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600; color: var(--white); min-width: 200px;
+    }
+    .skills-table td:last-child { color: rgba(255,255,255,0.65); line-height: 1.6; }
+    .skills-table tr:last-child td { border-bottom: none; }
+    .skills-table tr:hover td { background: var(--glass); }
+
+    /* ── FINAL CALLOUT ── */
+    .final-callout {
+      background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(167,139,250,0.05));
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: var(--radius);
+      padding: 48px;
+      text-align: center;
+      margin: 60px 0 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .final-callout::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    }
+    .final-callout-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(18px, 2.5vw, 24px);
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+      max-width: 700px; margin: 0 auto;
+      line-height: 1.6;
+    }
+    .final-callout-text strong { color: var(--accent2); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy);
+      border-top: 1px solid var(--border);
+      padding: 48px 80px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 24px;
+    }
+    .footer-left .footer-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px; font-weight: 700; color: var(--white);
+      margin-bottom: 6px;
+    }
+    .footer-disclaimer {
+      font-size: 12px; color: var(--muted); max-width: 400px; line-height: 1.5;
+    }
+    .footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+    .footer-link {
+      font-size: 14px; font-weight: 500;
+      color: var(--muted);
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .footer-link:hover { color: var(--white); border-color: var(--accent); background: var(--accent-light); }
+    .footer-link.primary {
+      background: var(--accent-light);
+      border-color: rgba(139,92,246,0.3);
+      color: var(--accent2);
+    }
+    .footer-link.primary:hover { background: rgba(139,92,246,0.2); }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      width: 60px; height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      margin-bottom: 32px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { opacity: 0; }
+    .fade-up.visible { animation: fadeUp 0.6s ease forwards; }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.15s; }
+    .fade-up:nth-child(3) { animation-delay: 0.25s; }
+    .fade-up:nth-child(4) { animation-delay: 0.35s; }
+    .fade-up:nth-child(5) { animation-delay: 0.45s; }
+    .fade-up:nth-child(6) { animation-delay: 0.55s; }
+
+    /* ── RESEARCH FINDING CARDS ── */
+    .research-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .research-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+      transform: translateY(-2px);
+    }
+    .research-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 11px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+    .research-finding {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px; font-weight: 600; color: var(--white);
+      margin-bottom: 10px; line-height: 1.4;
+    }
+    .research-detail { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .research-stat {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 5px 12px;
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 20px;
+      font-size: 12px; font-weight: 600; color: var(--accent2);
+    }
+
+    /* ── INSIGHT SUPPORTING ── */
+    .insight-support-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      display: flex; gap: 16px;
+      transition: all var(--transition);
+    }
+    .insight-support-card:hover {
+      background: var(--glass2);
+      border-color: rgba(139,92,246,0.2);
+    }
+    .insight-arrow {
+      width: 36px; height: 36px; flex-shrink: 0;
+      background: var(--accent-light);
+      border: 1px solid rgba(139,92,246,0.25);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .insight-support-title { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+    .insight-support-body { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 20px; }
+      .nav-framework { display: none; }
+      .hero { padding: 120px 28px 60px; }
+      section { padding: 72px 28px; }
+      footer { padding: 40px 28px; }
+      .rp-grid { grid-template-columns: 1fr; height: auto; }
+    }
+    @media (max-width: 600px) {
+      .hero-metrics { flex-direction: column; }
+      .hero-metric-card { min-width: 100%; }
+      .experiment-phase { flex-direction: column; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div id="progress-bar"></div>
+
+<!-- ══════════════════════════════════════ NAV ══════════════════════════════════════ -->
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">KM</div>
+    <span class="nav-logo-text">Kartik Mankar</span>
+  </a>
+
+  <div class="nav-framework">
+    <a href="#problem" class="nav-step" data-section="problem">Problem</a>
+    <a href="#users" class="nav-step" data-section="users">Users</a>
+    <a href="#research" class="nav-step" data-section="research">Research</a>
+    <a href="#insight" class="nav-step" data-section="insight">Insight</a>
+    <a href="#opportunity" class="nav-step" data-section="opportunity">Opportunity</a>
+    <a href="#prioritization" class="nav-step" data-section="prioritization">Prioritization</a>
+    <a href="#solution" class="nav-step" data-section="solution">Solution</a>
+    <a href="#prototype" class="nav-step" data-section="prototype">Prototype</a>
+    <a href="#metrics" class="nav-step" data-section="metrics">Metrics</a>
+    <a href="#experiment" class="nav-step" data-section="experiment">Experiment</a>
+    <a href="#result" class="nav-step" data-section="result">Result</a>
+  </div>
+
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M10 12L6 8l4-4"/>
+      </svg>
+      Back to Portfolio
+    </a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════ HERO ══════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">
+      Case Study 02
+      <span>·</span>
+      FinTech
+      <span>·</span>
+      Product Design Project
+    </div>
+
+    <h1 class="hero-title">Credit Risk<br />Command Center</h1>
+    <p class="hero-subtitle">Designing a unified decision platform for NBFC credit teams</p>
+
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Role</span>
+        <span class="hero-meta-value">Product Design Project</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Context</span>
+        <span class="hero-meta-value">MBA Independent Study</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Domain</span>
+        <span class="hero-meta-value">FinTech / Credit Risk / B2B SaaS</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Period</span>
+        <span class="hero-meta-value">2024</span>
+      </div>
+    </div>
+
+    <p class="hero-problem">
+      NBFC credit analysts process hundreds of applications daily, yet their workflow forces them to jump across 4–6 fragmented tools before they can make a single decision. The problem isn't missing data — it's that no system synthesizes it. This case study explores how a unified command center can transform credit operations.
+    </p>
+
+    <div class="hero-metrics">
+      <div class="hero-metric-card">
+        <span class="hero-metric-value">40%</span>
+        <span class="hero-metric-label">Projected decision time reduction</span>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-value">25%</span>
+        <span class="hero-metric-label">Consistency improvement (target)</span>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-value">60–70%</span>
+        <span class="hero-metric-label">Analyst time on data gathering (baseline)</span>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-value">3</span>
+        <span class="hero-metric-label">User types mapped</span>
+      </div>
+      <div class="hero-metric-card">
+        <span class="hero-metric-value">5</span>
+        <span class="hero-metric-label">Key screens prototyped</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 1. PROBLEM ══════════════════════════════════════ -->
+<section id="problem">
+  <div class="container">
+    <div class="section-number">Step 01 — Problem</div>
+    <h2 class="section-heading">Credit decisions are slow because the data lives <em>everywhere but the analyst</em></h2>
+    <div class="section-divider"></div>
+
+    <p style="font-size: 16px; color: rgba(255,255,255,0.65); max-width: 720px; margin-bottom: 36px; line-height: 1.75;">
+      NBFC credit analysts are asked to process hundreds of loan applications daily. But the data they need to make decisions is fragmented across completely disconnected systems — bureau data in one platform, bank statements in another, employer verification via email threads, and internal credit policy in a shared drive or a manager's head. The result is predictable: slow decisions, high cognitive effort, and inconsistent risk assessment across the team.
+    </p>
+
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div style="text-align: center;">
+          <div class="flow-node">Application</div>
+          <div class="flow-label">Loan request received</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div style="text-align: center;">
+          <div class="flow-node">Bureau Pull</div>
+          <div class="flow-label">CIBIL / Experian</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div style="text-align: center;">
+          <div class="flow-node">Bank Statement</div>
+          <div class="flow-label">Manual review</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div style="text-align: center;">
+          <div class="flow-node">Employer Check</div>
+          <div class="flow-label">Via email / calls</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div style="text-align: center; position: relative; padding-top: 24px;">
+          <div class="flow-node bottleneck">Manual Synthesis</div>
+          <div class="flow-label" style="color: var(--danger); opacity: 0.8;">2–4 hours of effort</div>
+        </div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div style="text-align: center;">
+          <div class="flow-node">Decision</div>
+          <div class="flow-label">Approve / Reject / Hold</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      
+      <p class="callout-text">
+        <strong>Evidence basis:</strong> Based on analysis of NBFC underwriting workflows and industry reports on digital lending operations in India. This is a product design project using publicly available information and sector research.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 2. USERS ══════════════════════════════════════ -->
+<section id="users">
+  <div class="container">
+    <div class="section-number">Step 02 — Users</div>
+    <h2 class="section-heading">Three roles, <em>one broken workflow</em></h2>
+    <div class="section-divider"></div>
+
+    <p style="font-size: 16px; color: rgba(255,255,255,0.65); max-width: 700px; margin-bottom: 40px; line-height: 1.75;">
+      The credit workflow isn't broken for one person — it's broken differently for each stakeholder. Understanding where each role suffers, and what success looks like for them, shaped every product decision that followed.
+    </p>
+
+    <div class="card-grid-3">
+      <!-- User 1 -->
+      <div class="user-card fade-up">
+        <div class="user-avatar" style="font-size:0.85rem;font-weight:700;">CA</div>
+        <div class="user-role">Credit Analyst</div>
+        <div class="user-context">Daily underwriting — front-line decision maker</div>
+        <div class="user-pain">
+          <span class="user-pain-label">Pain</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">Spends 60–70% of working time on data gathering across 4–6 tools before the actual credit assessment even begins</span>
+        </div>
+        <div class="user-goal">
+          <span class="user-goal-label">Goal</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">Faster, confident decisions with complete information in one view</span>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Key quote (inferred from workflow analysis)</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.6); font-style: italic;">"I know what I need to decide. I just can't find it all in one place."</div>
+        </div>
+      </div>
+
+      <!-- User 2 -->
+      <div class="user-card fade-up">
+        <div class="user-avatar" style="font-size:0.85rem;font-weight:700;">RM</div>
+        <div class="user-role">Risk Manager</div>
+        <div class="user-context">Policy & edge cases — decision quality owner</div>
+        <div class="user-pain">
+          <span class="user-pain-label">Pain</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">Inconsistent decisions across the analyst team for borderline cases — same data, different outcomes</span>
+        </div>
+        <div class="user-goal">
+          <span class="user-goal-label">Goal</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">Standardized, auditable decision quality across the entire credit team</span>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Key concern</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.6); font-style: italic;">"We need to explain every decision to regulators. Right now, that's a nightmare."</div>
+        </div>
+      </div>
+
+      <!-- User 3 -->
+      <div class="user-card fade-up">
+        <div class="user-avatar" style="font-size:0.85rem;font-weight:700;">OH</div>
+        <div class="user-role">Operations Head</div>
+        <div class="user-context">Throughput & KPIs — team efficiency owner</div>
+        <div class="user-pain">
+          <span class="user-pain-label">Pain</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">No real-time visibility into the pipeline — where applications are stuck, who is overloaded, what the decision rate looks like</span>
+        </div>
+        <div class="user-goal">
+          <span class="user-goal-label">Goal</span>
+          <span style="font-size: 14px; color: rgba(255,255,255,0.65);">Team efficiency metrics, SLA adherence, and clear throughput reporting</span>
+        </div>
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+          <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">Key concern</div>
+          <div style="font-size: 13px; color: rgba(255,255,255,0.6); font-style: italic;">"I have no idea where in the process we're losing time until after the fact."</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 3. RESEARCH ══════════════════════════════════════ -->
+<section id="research">
+  <div class="container">
+    <div class="section-number">Step 03 — Research</div>
+    <h2 class="section-heading">What the <em>research revealed</em></h2>
+    <div class="section-divider"></div>
+
+    <div class="callout callout-warning" style="margin-bottom: 36px;">
+      
+      <div class="callout-text">
+        <strong>Transparency note:</strong> This is a product design project. Research is based on publicly available information, industry reports on NBFC underwriting workflows, and analysis of digital lending operations — not primary user interviews at a specific company.
+      </div>
+    </div>
+
+    <div style="background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 28px; margin-bottom: 36px; font-size: 14px; color: var(--muted); line-height: 1.6;">
+      <strong style="color: var(--white);">Research approach:</strong> Analysis of NBFC underwriting workflows, RBI reports on digital lending, industry benchmarks from lending automation vendors, and secondary research on credit risk management practices in Indian financial institutions.
+    </div>
+
+    <div class="card-grid-2" style="gap: 20px;">
+      <div class="research-card fade-up">
+        <div class="research-num">Finding 01</div>
+        <div class="research-finding">Decision Time Baseline</div>
+        <div class="research-detail">Industry average credit decision time for retail loans in the NBFC sector ranges from 2–4 hours for manual underwriting workflows, across application intake, data gathering, analysis, and decision documentation.</div>
+        <span class="research-stat">2–4 hours per application</span>
+      </div>
+
+      <div class="research-card fade-up">
+        <div class="research-num">Finding 02</div>
+        <div class="research-finding">Data Fragmentation is Universal</div>
+        <div class="research-detail">Credit analysts in manual underwriting workflows typically context-switch between 4–6 distinct tools or systems per application — bureau portals, bank statement analyzers, internal CRMs, email, spreadsheets, and document repositories.</div>
+        <span class="research-stat">4–6 tools per application</span>
+      </div>
+
+      <div class="research-card fade-up">
+        <div class="research-num">Finding 03</div>
+        <div class="research-finding">Consistency Gap in Borderline Cases</div>
+        <div class="research-detail">Manual underwriting without structured decision frameworks shows 15–20% decision variance for borderline applicants — the same file reviewed by two different analysts can yield different outcomes, creating regulatory and portfolio risk.</div>
+        <span class="research-stat">15–20% variance on borderline cases</span>
+      </div>
+
+      <div class="research-card fade-up">
+        <div class="research-num">Finding 04</div>
+        <div class="research-finding">Decision Support ROI is Proven</div>
+        <div class="research-detail">Lending automation and decision support tools — when successfully adopted — reduce analyst time-on-data-gathering by 40–60%, freeing cognitive capacity for higher-order judgment calls rather than information retrieval.</div>
+        <span class="research-stat">40–60% reduction in data time</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 4. INSIGHT ══════════════════════════════════════ -->
+<section id="insight">
+  <div class="container">
+    <div class="section-number">Step 04 — Insight</div>
+    <h2 class="section-heading">The bottleneck is not data — <em>it's synthesis</em></h2>
+    <div class="section-divider"></div>
+
+    <div class="insight-main">
+      <p class="insight-main-text">
+        Analysts are not slow because they lack information. They're slow because they must manually gather, reconcile, and synthesize data from 4–6 sources before they can even begin the actual credit assessment. The decision-making moment — the part that requires human judgment — is buried under an hour of information archaeology.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <div class="insight-support-card fade-up">
+        <div class="insight-arrow" style="font-size:0.85rem;font-weight:700;">01</div>
+        <div>
+          <div class="insight-support-title">Data exists → Synthesis is missing</div>
+          <div class="insight-support-body">Every data point the analyst needs already exists — CIBIL score, salary credits, employment tenure. The gap is that there's no single surface that brings it together in a decision-ready format. The tool isn't missing; the integration is.</div>
+        </div>
+      </div>
+
+      <div class="insight-support-card fade-up">
+        <div class="insight-arrow" style="font-size:0.85rem;font-weight:700;">02</div>
+        <div>
+          <div class="insight-support-title">Decisions are slow → Confidence is lacking</div>
+          <div class="insight-support-body">Analysts delay decisions not because they're uncertain about their judgment, but because they're never fully confident they've seen the complete picture. Slow decisions are a symptom of incomplete information visibility, not weak analysis skills.</div>
+        </div>
+      </div>
+
+      <div class="insight-support-card fade-up">
+        <div class="insight-arrow" style="font-size:0.85rem;font-weight:700;">03</div>
+        <div>
+          <div class="insight-support-title">Inconsistency comes from unstructured frameworks, not analyst skill</div>
+          <div class="insight-support-body">Variance in decisions across analysts isn't a talent problem — it's a product problem. Without a structured checklist or decision framework embedded in the workflow, each analyst builds their own mental model. The solution is structure, not training.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 5. OPPORTUNITY ══════════════════════════════════════ -->
+<section id="opportunity">
+  <div class="container">
+    <div class="section-number">Step 05 — Opportunity</div>
+    <h2 class="section-heading">One screen. <em>All signals. One decision.</em></h2>
+    <div class="section-divider"></div>
+
+    <div class="opportunity-statement fade-up">
+      A unified credit command center that aggregates all data sources and provides structured decision support — turning a 4-hour manual process into a <strong style="color: var(--accent2);">45-minute structured workflow</strong>. Not by automating the decision, but by eliminating the information retrieval problem so analysts can focus entirely on judgment.
+    </div>
+
+    <div class="opportunity-size fade-up">
+      <span style="font-size:0.85rem;font-weight:700;color:var(--accent);flex-shrink:0;">NBFC</span>
+      <div>
+        <strong style="color: var(--accent2); display: block; margin-bottom: 6px; font-size: 15px;">Market opportunity signal</strong>
+        Indian NBFCs collectively process millions of loan applications monthly across retail, MSME, and personal loan segments. Even a 30% decision time reduction represents enormous operational leverage — fewer analysts needed per volume, faster approval turnaround creating competitive differentiation, and reduced cost-per-decision at scale.
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 36px;">
+      <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size:1.5rem;font-weight:800;color:var(--accent);margin-bottom:8px;">40%</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px;">Speed</div>
+        <div style="font-size: 13px; color: var(--muted);">2–4 hrs → 45 min decision cycle</div>
+      </div>
+      <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size:1.5rem;font-weight:800;color:var(--accent);margin-bottom:8px;">25%</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px;">Consistency</div>
+        <div style="font-size: 13px; color: var(--muted);">Structured framework → 90%+ agreement on comparable cases</div>
+      </div>
+      <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size:1.5rem;font-weight:800;color:var(--accent);margin-bottom:8px;">90%+</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px;">Compliance</div>
+        <div style="font-size: 13px; color: var(--muted);">Full audit trail for every decision, regulatory-ready</div>
+      </div>
+      <div class="card" style="text-align: center; padding: 24px;">
+        <div style="font-size:1.5rem;font-weight:800;color:var(--accent);margin-bottom:8px;">100%</div>
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 6px;">Scale</div>
+        <div style="font-size: 13px; color: var(--muted);">More volume per analyst without adding headcount</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 6. PRIORITIZATION ══════════════════════════════════════ -->
+<section id="prioritization">
+  <div class="container">
+    <div class="section-number">Step 06 — Prioritization</div>
+    <h2 class="section-heading">What to <em>build first</em></h2>
+    <div class="section-divider"></div>
+
+    <p style="font-size: 16px; color: rgba(255,255,255,0.65); max-width: 700px; margin-bottom: 36px; line-height: 1.75;">
+      Given the insights, the prioritization question becomes: which features directly eliminate the synthesis bottleneck, and which are valuable-but-secondary? Using a RICE-informed framework — weighted toward Reach + Impact — the roadmap below emerges naturally.
+    </p>
+
+    <div class="table-wrapper">
+      <table class="prio-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Impact</th>
+            <th>Effort</th>
+            <th>Priority</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feature-name">Unified data view (all sources on one screen)</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-p0">P0</span></td>
+          </tr>
+          <tr>
+            <td class="feature-name">Risk score visualization</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><span class="badge badge-high">Low</span></td>
+            <td><span class="badge badge-p0">P0</span></td>
+          </tr>
+          <tr>
+            <td class="feature-name">Structured decision checklist</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-high">Low</span></td>
+            <td><span class="badge badge-p1">P1</span></td>
+          </tr>
+          <tr>
+            <td class="feature-name">Decision audit trail</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-p1">P1</span></td>
+          </tr>
+          <tr>
+            <td class="feature-name">ML-based anomaly detection</td>
+            <td><span class="badge badge-high">High</span></td>
+            <td><span class="badge badge-low">High</span></td>
+            <td><span class="badge badge-p2">P2</span></td>
+          </tr>
+          <tr>
+            <td class="feature-name">Case notes &amp; team collaboration</td>
+            <td><span class="badge" style="background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid var(--border);">Low</span></td>
+            <td><span class="badge badge-high">Low</span></td>
+            <td><span class="badge badge-p3">P3</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="framework-note">
+      <strong>Framework applied: RICE</strong> — Reach (all analysts daily), Impact (direct bottleneck removal), Confidence (evidenced by research), Effort (engineering complexity). P0 items were chosen for high impact with manageable effort. ML features pushed to P2 due to data requirements and model development time.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 7. SOLUTION ══════════════════════════════════════ -->
+<section id="solution">
+  <div class="container">
+    <div class="section-number">Step 07 — Solution</div>
+    <h2 class="section-heading"><em>Credit Risk</em> Command Center</h2>
+    <div class="section-divider"></div>
+
+    <div style="background: var(--glass); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 32px 36px; margin-bottom: 40px;">
+      <p style="font-size: 17px; color: rgba(255,255,255,0.8); line-height: 1.75; max-width: 760px;">
+        A single-pane B2B dashboard that aggregates bureau data, bank statement analysis, employment verification, and ML risk scoring into one structured interface for credit decisions. The goal: eliminate context-switching entirely, and embed structured decision support directly into the analyst's workflow.
+      </p>
+    </div>
+
+    <div class="card-grid-2" style="gap: 20px;">
+      <div class="capability-card fade-up">
+        <div class="cap-num">01</div>
+        <div class="card-icon" style="font-size:0.85rem;font-weight:700;">01</div>
+        <div class="card-title">Unified Applicant View</div>
+        <div class="card-body">All data sources — bureau, bank statements, employment verification, application details — surfaced on a single screen. Zero tab-switching. The analyst never needs to leave the platform to build their understanding of the applicant.</div>
+      </div>
+
+      <div class="capability-card fade-up">
+        <div class="cap-num">02</div>
+        <div class="card-icon" style="font-size:0.85rem;font-weight:700;">02</div>
+        <div class="card-title">Risk Signal Dashboard</div>
+        <div class="card-body">Bureau score, bank health metrics, income stability trend, and employer verification status — all visualized in scannable, color-coded signal cards. Turns raw data into decision-ready signals that analysts can assess in seconds, not minutes.</div>
+      </div>
+
+      <div class="capability-card fade-up">
+        <div class="cap-num">03</div>
+        <div class="card-icon" style="font-size:0.85rem;font-weight:700;">03</div>
+        <div class="card-title">Decision Checklist</div>
+        <div class="card-body">A structured yes/no framework with mandatory fields that enforces consistent evaluation of all key risk factors before a decision can be submitted. Reduces decision variance by ensuring every analyst covers the same ground, every time.</div>
+      </div>
+
+      <div class="capability-card fade-up">
+        <div class="cap-num">04</div>
+        <div class="card-icon" style="font-size:0.85rem;font-weight:700;">04</div>
+        <div class="card-title">Audit Trail</div>
+        <div class="card-body">Every decision is logged with a complete data snapshot — what was seen, what was checked, what was decided, and why. Enables regulatory compliance, continuous model improvement, and performance benchmarking across analysts.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 8. PROTOTYPE ══════════════════════════════════════ -->
+<section id="prototype">
+  <div class="container">
+    <div class="section-number">Step 08 — Prototype</div>
+    <h2 class="section-heading">Key <em>screens</em></h2>
+    <div class="section-divider"></div>
+
+    <p style="font-size: 16px; color: rgba(255,255,255,0.65); max-width: 700px; margin-bottom: 40px; line-height: 1.75;">
+      Three primary screens define the core analyst workflow. Each screen is designed around a specific job-to-be-done — reducing information-seeking friction and surfacing the most critical signals at the right moment in the decision process.
+    </p>
+
+    <div class="screen-container">
+
+      <!-- Screen 1: Application Queue -->
+      <div class="screen-card fade-up">
+        <div class="screen-titlebar">
+          <div class="screen-dots">
+            <div class="screen-dot screen-dot-r"></div>
+            <div class="screen-dot screen-dot-y"></div>
+            <div class="screen-dot screen-dot-g"></div>
+          </div>
+          <div class="screen-name">credit-command / queue</div>
+          <div></div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-label">Screen 01 — Application Queue</div>
+          <div class="screen-desc">Prioritized list of pending applications with key signals visible at-a-glance</div>
+
+          <div class="queue-header">
+            <span class="queue-header-left">Active Queue (24 applications)</span>
+            <span class="queue-header-right">Sort: Priority ↓</span>
+          </div>
+
+          <div class="queue-row" style="border-color: rgba(248,113,113,0.35);">
+            <span class="queue-app-id">APP-4821</span>
+            <span class="queue-name">Sharma, R.</span>
+            <span class="queue-amount">₹8.5L</span>
+            <span class="queue-score score-red">Score: 612</span>
+            <span class="queue-flag">Priority</span>
+          </div>
+          <div class="queue-row">
+            <span class="queue-app-id">APP-4820</span>
+            <span class="queue-name">Patel, M.</span>
+            <span class="queue-amount">₹3.2L</span>
+            <span class="queue-score score-green">Score: 748</span>
+            <span style="font-size:10px; color: var(--muted);">2h 14m</span>
+          </div>
+          <div class="queue-row">
+            <span class="queue-app-id">APP-4818</span>
+            <span class="queue-name">Verma, K.</span>
+            <span class="queue-amount">₹5.0L</span>
+            <span class="queue-score score-yellow">Score: 681</span>
+            <span style="font-size:10px; color: var(--muted);">3h 40m</span>
+          </div>
+          <div class="queue-row">
+            <span class="queue-app-id">APP-4815</span>
+            <span class="queue-name">Singh, A.</span>
+            <span class="queue-amount">₹12.0L</span>
+            <span class="queue-score score-green">Score: 772</span>
+            <span style="font-size:10px; color: var(--muted);">4h 05m</span>
+          </div>
+          <div style="margin-top: 10px; padding: 8px; background: rgba(139,92,246,0.06); border-radius: 6px; display: flex; justify-content: space-between; font-size: 10px; color: var(--muted);">
+            <span style="color:#34d399;font-weight:600;">14 Low Risk</span>
+            <span style="color:#fbbf24;font-weight:600;">7 Medium Risk</span>
+            <span style="color:#f87171;font-weight:600;">3 High Risk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Applicant Risk Profile -->
+      <div class="screen-card fade-up">
+        <div class="screen-titlebar">
+          <div class="screen-dots">
+            <div class="screen-dot screen-dot-r"></div>
+            <div class="screen-dot screen-dot-y"></div>
+            <div class="screen-dot screen-dot-g"></div>
+          </div>
+          <div class="screen-name">credit-command / profile / APP-4821</div>
+          <div></div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-label">Screen 02 — Applicant Risk Profile</div>
+          <div class="screen-desc">Main decision screen: applicant info + risk signals + decision panel</div>
+
+          <div class="rp-grid">
+            <!-- Left: Applicant Info -->
+            <div class="rp-panel">
+              <div class="rp-panel-title">Applicant</div>
+              <div class="rp-field">
+                <div class="rp-field-label">Name</div>
+                <div class="rp-field-val">Rahul Sharma</div>
+              </div>
+              <div class="rp-field">
+                <div class="rp-field-label">Application</div>
+                <div class="rp-field-val">₹8,50,000</div>
+              </div>
+              <div class="rp-field">
+                <div class="rp-field-label">Tenure</div>
+                <div class="rp-field-val">36 months</div>
+              </div>
+              <div class="rp-field">
+                <div class="rp-field-label">Product</div>
+                <div class="rp-field-val">Personal Loan</div>
+              </div>
+              <div class="rp-field">
+                <div class="rp-field-label">Employer</div>
+                <div class="rp-field-val" style="color: var(--warning);">Mid-corp (Review)</div>
+              </div>
+              <div class="rp-field">
+                <div class="rp-field-label">Bureau</div>
+                <div class="rp-field-val" style="color: var(--danger);">612 (Low)</div>
+              </div>
+            </div>
+
+            <!-- Center: Risk Signals -->
+            <div class="rp-panel">
+              <div class="rp-panel-title">Risk Signals</div>
+              <div style="margin-bottom: 6px;">
+                <div class="rp-signal">
+                  <span class="rp-signal-label">Bureau Score</span>
+                  <span style="font-size:9px; color: var(--danger); font-weight:600;">612 / 900</span>
+                </div>
+                <div class="rp-bar" style="width:68%;"><div class="rp-bar rp-bar-r" style="width:68%;"></div></div>
+              </div>
+              <div style="margin-bottom: 6px;">
+                <div class="rp-signal">
+                  <span class="rp-signal-label">Income Stability</span>
+                  <span style="font-size:9px; color: var(--success); font-weight:600;">Stable</span>
+                </div>
+                <div class="rp-bar"><div class="rp-bar rp-bar-g" style="width:82%;"></div></div>
+              </div>
+              <div style="margin-bottom: 6px;">
+                <div class="rp-signal">
+                  <span class="rp-signal-label">Bank Health</span>
+                  <span style="font-size:9px; color: var(--warning); font-weight:600;">Moderate</span>
+                </div>
+                <div class="rp-bar"><div class="rp-bar rp-bar-y" style="width:55%;"></div></div>
+              </div>
+              <div style="margin-bottom: 6px;">
+                <div class="rp-signal">
+                  <span class="rp-signal-label">Employer Check</span>
+                  <span style="font-size:9px; color: var(--warning); font-weight:600;">Pending</span>
+                </div>
+                <div class="rp-bar"><div class="rp-bar rp-bar-y" style="width:40%;"></div></div>
+              </div>
+              <div style="margin-bottom: 6px;">
+                <div class="rp-signal">
+                  <span class="rp-signal-label">FOIR</span>
+                  <span style="font-size:9px; color: var(--danger); font-weight:600;">48% (High)</span>
+                </div>
+                <div class="rp-bar"><div class="rp-bar rp-bar-r" style="width:75%;"></div></div>
+              </div>
+              <div style="margin-top: 8px; padding: 5px; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); border-radius: 4px; font-size: 9px; color: var(--danger);">
+                2 risk flags detected — review required
+              </div>
+            </div>
+
+            <!-- Right: Decision Panel -->
+            <div class="rp-panel">
+              <div class="rp-panel-title">Decision</div>
+              <div style="font-size: 9px; color: var(--muted); margin-bottom: 6px;">Checklist (3/5 complete)</div>
+              <div style="font-size: 9px; color: rgba(255,255,255,0.6); margin-bottom: 3px;">Income verified</div>
+              <div style="font-size: 9px; color: rgba(255,255,255,0.6); margin-bottom: 3px;">Bureau checked</div>
+              <div style="font-size: 9px; color: rgba(255,255,255,0.6); margin-bottom: 3px;">Bank stmts reviewed</div>
+              <div style="font-size: 9px; color: var(--muted); margin-bottom: 3px;">⬜ Employer confirmed</div>
+              <div style="font-size: 9px; color: var(--muted); margin-bottom: 8px;">⬜ Collateral assessed</div>
+              <div class="rp-decision-btn rp-btn-approve">Approve</div>
+              <div class="rp-decision-btn rp-btn-reject">Reject</div>
+              <div class="rp-decision-btn rp-btn-hold">Hold for Review</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 3: Risk Score Breakdown -->
+      <div class="screen-card fade-up">
+        <div class="screen-titlebar">
+          <div class="screen-dots">
+            <div class="screen-dot screen-dot-r"></div>
+            <div class="screen-dot screen-dot-y"></div>
+            <div class="screen-dot screen-dot-g"></div>
+          </div>
+          <div class="screen-name">credit-command / score-breakdown</div>
+          <div></div>
+        </div>
+        <div class="screen-body">
+          <div class="screen-label">Screen 03 — Risk Score Breakdown</div>
+          <div class="screen-desc">Visual decomposition of credit score components with color coding</div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <div>
+              <div style="font-size: 9px; color: var(--muted); margin-bottom: 2px;">Composite Risk Score</div>
+              <div style="font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--danger); line-height: 1;">54 <span style="font-size: 12px; color: var(--muted);">/ 100</span></div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 9px; color: var(--muted); margin-bottom: 2px;">Risk Category</div>
+              <span style="background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); color: var(--danger); padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 600;">HIGH RISK</span>
+            </div>
+          </div>
+
+          <div class="sb-item">
+            <div class="sb-header">
+              <span class="sb-label">Credit History (30%)</span>
+              <span class="sb-value" style="color: var(--danger);">42/100</span>
+            </div>
+            <div class="sb-track"><div class="sb-fill sb-fill-r" style="width:42%;"></div></div>
+          </div>
+          <div class="sb-item">
+            <div class="sb-header">
+              <span class="sb-label">Income Adequacy (25%)</span>
+              <span class="sb-value" style="color: var(--success);">78/100</span>
+            </div>
+            <div class="sb-track"><div class="sb-fill sb-fill-g" style="width:78%;"></div></div>
+          </div>
+          <div class="sb-item">
+            <div class="sb-header">
+              <span class="sb-label">Debt-to-Income (20%)</span>
+              <span class="sb-value" style="color: var(--danger);">31/100</span>
+            </div>
+            <div class="sb-track"><div class="sb-fill sb-fill-r" style="width:31%;"></div></div>
+          </div>
+          <div class="sb-item">
+            <div class="sb-header">
+              <span class="sb-label">Employment Stability (15%)</span>
+              <span class="sb-value" style="color: var(--warning);">61/100</span>
+            </div>
+            <div class="sb-track"><div class="sb-fill sb-fill-y" style="width:61%;"></div></div>
+          </div>
+          <div class="sb-item">
+            <div class="sb-header">
+              <span class="sb-label">Banking Behavior (10%)</span>
+              <span class="sb-value" style="color: var(--accent2);">55/100</span>
+            </div>
+            <div class="sb-track"><div class="sb-fill sb-fill-p" style="width:55%;"></div></div>
+          </div>
+
+          <div style="margin-top: 10px; padding: 6px 8px; background: rgba(139,92,246,0.06); border-radius: 4px; font-size: 9px; color: var(--accent2); text-align: center;">
+            ML flag: Income-to-credit-history gap detected
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-accent" style="margin-top: 32px;">
+      
+      <p class="callout-text">
+        <strong>Design rationale:</strong> The three screens map to three distinct job-to-be-done moments — <em>selecting</em> the right application (Queue), <em>assessing</em> the applicant holistically (Risk Profile), and <em>understanding</em> the score drivers (Breakdown). Each screen is optimized for the cognitive task at that stage, not stuffed with all available data.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 9. METRICS ══════════════════════════════════════ -->
+<section id="metrics">
+  <div class="container">
+    <div class="section-number">Step 09 — Metrics</div>
+    <h2 class="section-heading">How I would <em>measure success</em></h2>
+    <div class="section-divider"></div>
+
+    <div class="north-star-card fade-up">
+      <div class="north-star-label">North Star Metric</div>
+      <div class="north-star-metric">Average Credit Decision Time per Application</div>
+      <div class="north-star-sub">Target: &lt; 45 minutes (from 2–4 hour baseline) — without increasing decision error rate</div>
+    </div>
+
+    <div class="card-grid-2" style="gap: 20px;">
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Decision Time</div>
+        <div class="metric-card-target">&lt; 45 min</div>
+        <div class="metric-card-desc">Target per application, down from 2–4 hour baseline. Measured from application assignment to decision submission in the platform.</div>
+      </div>
+
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Decision Consistency</div>
+        <div class="metric-card-target">≥ 90%</div>
+        <div class="metric-card-desc">Agreement rate on comparable cases reviewed by different analysts. Tested via shadow review panels on matched applicant profiles monthly.</div>
+      </div>
+
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Analyst Efficiency</div>
+        <div class="metric-card-target">+35% throughput</div>
+        <div class="metric-card-desc">Applications processed per analyst per day. Leading indicator of whether the platform is creating real capacity vs. just shifting where time is spent.</div>
+      </div>
+
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Data Re-verification Rate</div>
+        <div class="metric-card-target">&lt; 5%</div>
+        <div class="metric-card-desc">% of decisions requiring a second pass due to data errors or missing information. A proxy for data aggregation quality within the platform.</div>
+      </div>
+
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Feature Adoption Rate</div>
+        <div class="metric-card-target">80% in 60 days</div>
+        <div class="metric-card-desc">% of team actively using all P0 + P1 features within 60 days of rollout. If adoption lags, the product has a UX or onboarding problem, not a feature problem.</div>
+      </div>
+
+      <div class="metric-card fade-up">
+        <div class="metric-card-label">Decision Default Rate</div>
+        <div class="metric-card-target">No regression</div>
+        <div class="metric-card-desc">Portfolio default rate on approved loans must not increase. Speed and consistency gains are meaningless if they come at the cost of credit quality. Guardrail metric.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 10. EXPERIMENT ══════════════════════════════════════ -->
+<section id="experiment">
+  <div class="container">
+    <div class="section-number">Step 10 — Experiment</div>
+    <h2 class="section-heading">How I would <em>validate this</em></h2>
+    <div class="section-divider"></div>
+
+    <p style="font-size: 16px; color: rgba(255,255,255,0.65); max-width: 700px; margin-bottom: 40px; line-height: 1.75;">
+      A three-phase rollout designed to minimize risk while generating high-quality signal. Each phase answers a specific question before the next phase begins — and each has clear criteria for proceeding or pivoting.
+    </p>
+
+    <div class="experiment-phase fade-up">
+      <div class="exp-phase-num">01</div>
+      <div class="exp-phase-content">
+        <div class="exp-phase-title">Shadow Mode — Observe Without Changing Behavior</div>
+        <div class="exp-phase-time">Week 1–2</div>
+        <div class="exp-phase-desc">
+          Run the Credit Risk Command Center alongside the existing workflow — analysts continue their normal process, but all data is simultaneously aggregated in the new platform. Compare decisions made without the tool against what the tool's signals would suggest. This surfaces calibration gaps and data quality issues before any behavioral change is introduced. <strong style="color: var(--white);">Key question:</strong> Does the platform surface the same data the analyst finds manually?
+        </div>
+      </div>
+    </div>
+
+    <div class="experiment-phase fade-up">
+      <div class="exp-phase-num">02</div>
+      <div class="exp-phase-content">
+        <div class="exp-phase-title">Controlled Pilot — Measure Real Behavior Change</div>
+        <div class="exp-phase-time">Week 3–6</div>
+        <div class="exp-phase-desc">
+          Route 50% of incoming applications through the new platform (treatment group) and 50% through the existing workflow (control group). Measure decision time, consistency scores, and analyst satisfaction for both cohorts. Applications should be matched by loan amount, applicant profile, and analyst experience level to control for confounding variables. <strong style="color: var(--white);">Key question:</strong> Does the tool create statistically significant improvement in decision time without degrading decision quality?
+        </div>
+      </div>
+    </div>
+
+    <div class="experiment-phase fade-up">
+      <div class="exp-phase-num">03</div>
+      <div class="exp-phase-content">
+        <div class="exp-phase-title">Full Rollout — Scale with Confidence</div>
+        <div class="exp-phase-time">Week 7+ (contingent on pilot results)</div>
+        <div class="exp-phase-desc">
+          Based on pilot results meeting the success threshold, migrate 100% of applications to the platform. Continue monitoring North Star and guardrail metrics weekly for the first 90 days. Set up an analyst feedback loop (bi-weekly 15-min syncs) to capture friction points not visible in quantitative data. Begin planning P2 feature development (ML anomaly detection) based on accumulated decision data.
+        </div>
+      </div>
+    </div>
+
+    <div class="success-threshold">
+      <div class="success-threshold-icon" style="font-size:0.75rem;font-weight:700;">TARGET</div>
+      <div class="success-threshold-content">
+        <strong>Success threshold for proceeding from Pilot to Full Rollout:</strong> ≥ 20% reduction in average decision time for the treatment group with <em>no statistically significant increase</em> in the default rate on loans approved through the new platform within the first 60-day cohort.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ 11. RESULT ══════════════════════════════════════ -->
+<section id="result">
+  <div class="container">
+    <div class="section-number">Step 11 — Result</div>
+    <h2 class="section-heading"><em>Projected outcome</em></h2>
+    <div class="section-divider"></div>
+
+    <div class="callout callout-warning" style="margin-bottom: 36px;">
+      
+      <div class="callout-text">
+        <strong>Disclaimer:</strong> This is a product design project. Results are projected based on the problem hypothesis and research findings, not measured outcomes from a live deployment. Projections are grounded in industry benchmarks for comparable lending automation implementations.
+      </div>
+    </div>
+
+    <div class="card-grid-2" style="gap: 16px; margin-bottom: 40px;">
+      <div class="result-card fade-up">
+        <div class="result-icon" style="font-size:0.85rem;font-weight:700;">01</div>
+        <div>
+          <div class="result-value">40%</div>
+          <div class="result-label">Projected reduction in average credit decision time (from 2–4 hrs to ~90 min in Year 1)</div>
+        </div>
+      </div>
+      <div class="result-card fade-up">
+        <div class="result-icon" style="font-size:0.85rem;font-weight:700;">02</div>
+        <div>
+          <div class="result-value">25%</div>
+          <div class="result-label">Improvement in decision consistency for borderline applicant profiles</div>
+        </div>
+      </div>
+      <div class="result-card fade-up">
+        <div class="result-icon" style="font-size:0.85rem;font-weight:700;">03</div>
+        <div>
+          <div class="result-value">Faster</div>
+          <div class="result-label">Analyst onboarding — structured decision framework reduces time-to-independent-decision for new hires</div>
+        </div>
+      </div>
+      <div class="result-card fade-up">
+        <div class="result-icon" style="font-size:0.85rem;font-weight:700;">04</div>
+        <div>
+          <div class="result-value">Compounding</div>
+          <div class="result-label">Audit trail enables continuous model improvement — every decision makes the next one better</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learnings">
+      <div class="learnings-title">
+        PM Learnings from this Case Study
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-text">
+          In B2B, <em>the enemy is context-switching</em> — every tool switch is not just a time cost, it's a cognitive cost. The most powerful product decision in this case study wasn't a feature; it was the choice to eliminate the need to leave the platform entirely.
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-text">
+          <em>Decision support is not automation</em> — the goal was never to replace the analyst's judgment. It was to give analysts more signal, faster, so their judgment could operate at its best. Framing matters: this is an intelligence tool, not a replacement tool.
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-text">
+          <em>Consistency is a product problem, not a training problem</em> — if decision variance exists across a trained team, the root cause is almost always an unstructured process, not individual skill. The solution is to embed structure into the workflow itself.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ PM SKILLS ══════════════════════════════════════ -->
+<section style="background: var(--bg2);">
+  <div class="container">
+    <div class="section-number">Appendix — PM Skills Demonstrated</div>
+    <h2 class="section-heading">Skills <em>evidenced</em> in this case study</h2>
+    <div class="section-divider"></div>
+
+    <div class="table-wrapper">
+      <table class="skills-table">
+        <thead>
+          <tr>
+            <th>PM Skill</th>
+            <th>Evidence in this Case Study</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Problem Definition</td>
+            <td>Identified synthesis — not data availability — as the true bottleneck. Reframed the problem from "analysts are slow" to "no system connects the data they already have."</td>
+          </tr>
+          <tr>
+            <td>User Research</td>
+            <td>Mapped 3 distinct user types (Analyst, Risk Manager, Ops Head) each with specific pain points, goals, and success metrics — avoiding the trap of designing for a single "generic user."</td>
+          </tr>
+          <tr>
+            <td>Prioritization</td>
+            <td>Applied RICE framework to a 6-feature roadmap, sequencing P0 items around highest impact + manageable effort. Explicitly called out why ML anomaly detection is P2, not P0.</td>
+          </tr>
+          <tr>
+            <td>Product Design</td>
+            <td>Designed 3 key screens — each mapped to a specific cognitive task in the workflow — with clear information hierarchy, progressive disclosure, and zero tab-switching as the design principle.</td>
+          </tr>
+          <tr>
+            <td>Metrics Framework</td>
+            <td>Defined a North Star metric (decision time) plus 5 supporting metrics including a critical guardrail (default rate). Demonstrated understanding of the difference between leading indicators and guardrails.</td>
+          </tr>
+          <tr>
+            <td>Experimentation</td>
+            <td>Structured a 3-phase validation approach — Shadow Mode → Controlled Pilot → Full Rollout — with specific success thresholds and clear criteria for proceeding between phases.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Final Callout -->
+    <div class="final-callout">
+      <p class="final-callout-text">
+        This case study demonstrates how product thinking — not just technical design — can transform operational workflows. The solution isn't complex. <strong>The insight is.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════ FOOTER ══════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <div class="footer-logo">Kartik Mankar</div>
+      <p class="footer-disclaimer">
+        MBA Product Design Project. Research based on publicly available information and industry analysis of NBFC underwriting workflows. Not based on primary research at a specific company.
+      </p>
+      <div style="font-size: 0.75rem; color: var(--muted); margin-top: 8px;">&copy; 2026 Kartik Mankar &bull; PM Portfolio</div>
+    </div>
+    <div class="footer-links">
+      <a href="case-study-haber.html" class="footer-link">← CS 01: Haber</a>
+      <a href="case-study-fintech.html" class="footer-link primary">CS 03: FinTech Loan Funnel →</a>
+      <a href="index.html" class="footer-link">Portfolio Home</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════ SCRIPTS ══════════════════════════════════════ -->
+<script>
+  // ── Progress bar
+  const progressBar = document.getElementById('progress-bar');
+  function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }
+
+  // ── Nav glassmorphism on scroll
+  const nav = document.getElementById('main-nav');
+  function updateNav() {
+    if (window.scrollY > 40) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  }
+
+  // ── Active section highlighting with IntersectionObserver
+  const sections = document.querySelectorAll('section[id]');
+  const navSteps = document.querySelectorAll('.nav-step[data-section]');
+
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navSteps.forEach(step => {
+          step.classList.remove('active');
+          if (step.getAttribute('data-section') === id) {
+            step.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { threshold: 0.3, rootMargin: '-64px 0px -30% 0px' });
+
+  sections.forEach(section => {
+    if (section.id !== 'hero') {
+      sectionObserver.observe(section);
+    }
+  });
+
+  // ── Fade-up animation with IntersectionObserver
+  const fadeObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+
+  // ── Smooth scroll for nav pills
+  navSteps.forEach(step => {
+    step.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = step.getAttribute('href');
+      const target = document.querySelector(targetId);
+      if (target) {
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+
+  // ── Combined scroll handler
+  window.addEventListener('scroll', () => {
+    updateProgress();
+    updateNav();
+  }, { passive: true });
+
+  updateProgress();
+  updateNav();
+</script>
+
+</body>
+</html>

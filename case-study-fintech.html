@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FinTech Loan Funnel Optimization — Kartik Mankar PM Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #030d1a;
+    --bg2: #060f1e;
+    --accent: #10b981;
+    --accent2: #34d399;
+    --accent-light: rgba(16,185,129,0.12);
+    --white: #ffffff;
+    --muted: rgba(255,255,255,0.45);
+    --border: rgba(255,255,255,0.08);
+    --glass: rgba(255,255,255,0.03);
+    --glass2: rgba(255,255,255,0.06);
+    --red: #ef4444;
+    --red-light: rgba(239,68,68,0.12);
+    --yellow: #f59e0b;
+    --yellow-light: rgba(245,158,11,0.12);
+    --font-sans: 'Inter', sans-serif;
+    --font-display: 'Space Grotesk', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  /* ===== NOISE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(3,13,26,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .nav-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+  .nav-logo-name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--white);
+  }
+
+  .nav-progress {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex: 1;
+    max-width: 680px;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .nav-step {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 7px;
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+  }
+  .nav-step:hover { color: var(--white); background: var(--glass2); }
+  .nav-step.active { color: var(--accent); background: var(--accent-light); }
+  .nav-sep {
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .nav-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s;
+    flex-shrink: 0;
+  }
+  .nav-back:hover { color: var(--accent); }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 140px 24px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 6vw, 68px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 680px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .hero-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .hero-meta-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .hero-meta-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+  }
+
+  .disclaimer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #f59e0b;
+    font-weight: 500;
+    margin-bottom: 52px;
+  }
+
+  .metric-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 0;
+  }
+  .metric-card {
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 18px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .metric-card:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-2px); }
+  .metric-card-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .metric-card-label {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ===== ABOUT FINTECH CALLOUT ===== */
+  .about-callout {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+  }
+  .callout-box {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .callout-box strong { color: var(--white); }
+
+  /* ===== SECTION LAYOUT ===== */
+  .section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 80px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .section:first-of-type { border-top: none; }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .section-label::before {
+    content: '';
+    width: 20px; height: 1px;
+    background: var(--accent);
+  }
+
+  .section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 3.5vw, 38px);
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    line-height: 1.2;
+    margin-bottom: 40px;
+    color: var(--white);
+  }
+
+  /* ===== CARDS ===== */
+  .card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .card h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+  /* ===== FUNNEL VISUALIZATION ===== */
+  .funnel-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin: 40px auto;
+    max-width: 660px;
+  }
+  .funnel-stage {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-radius: 6px;
+    height: 48px;
+    transition: all 0.2s;
+  }
+  .funnel-stage-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    gap: 8px;
+  }
+  .funnel-label {
+    position: absolute;
+    right: calc(100% + 12px);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .funnel-pct {
+    position: absolute;
+    left: calc(100% + 12px);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* ===== PROBLEM STATEMENT BOX ===== */
+  .problem-statement {
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 14px;
+    padding: 28px 32px;
+    margin-top: 40px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.5;
+    position: relative;
+  }
+  .problem-statement::before {
+    content: '"';
+    position: absolute;
+    top: -10px; left: 20px;
+    font-size: 80px;
+    color: var(--accent);
+    opacity: 0.3;
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  /* ===== PERSONA CARDS ===== */
+  .persona-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.25s;
+  }
+  .persona-card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .persona-avatar {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+  .persona-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .persona-age {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .persona-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: flex-start;
+  }
+  .persona-row-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--red);
+    min-width: 40px;
+    padding-top: 2px;
+  }
+  .persona-row-label.success { color: var(--accent); }
+  .persona-row-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ===== RESEARCH FINDINGS ===== */
+  .research-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.25s;
+  }
+  .research-card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .research-icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+  .research-title {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 10px;
+  }
+  .research-text {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ===== INSIGHT CARDS ===== */
+  .insight-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    gap: 20px;
+    transition: all 0.25s;
+  }
+  .insight-card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .insight-num {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.2;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: -4px;
+  }
+  .insight-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .insight-text strong { color: var(--white); }
+  .insights-col { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ===== OPPORTUNITY ===== */
+  .opp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .opp-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .opp-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .opp-sizing {
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 32px;
+    font-size: 15px;
+    color: var(--accent2);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ===== PRIORITIZATION TABLE ===== */
+  .prio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+  }
+  .prio-table thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .prio-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .prio-table tbody tr:last-child { border-bottom: none; }
+  .prio-table tbody tr:hover { background: var(--glass); }
+  .prio-table td {
+    padding: 16px 16px;
+    font-size: 14px;
+    color: var(--muted);
+    vertical-align: top;
+  }
+  .prio-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.5px;
+  }
+  .prio-p0 { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+  .prio-p1 { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+  .prio-p2 { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(16,185,129,0.2); }
+  .prio-p3 { background: var(--glass2); color: var(--white); border: 1px solid var(--border); }
+  .prio-p4 { background: var(--glass); color: var(--muted); border: 1px solid var(--border); }
+  .prio-feature { color: var(--white); font-weight: 600; }
+
+  /* ===== SOLUTION CARDS ===== */
+  .solution-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .solution-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .solution-card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .solution-card:hover::before { opacity: 1; }
+  .solution-num {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .solution-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .solution-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .solution-tag {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 100px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid rgba(16,185,129,0.2);
+    letter-spacing: 0.4px;
+  }
+
+  /* ===== PROTOTYPE WIREFRAMES ===== */
+  .wireframes-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+  .wireframe {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .wireframe:hover { border-color: rgba(16,185,129,0.3); transform: translateY(-4px); }
+  .wf-statusbar {
+    height: 28px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    font-size: 9px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .wf-body {
+    flex: 1;
+    padding: 16px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+  }
+  .wf-chip {
+    align-self: flex-start;
+    font-size: 8px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    background: var(--accent-light);
+    color: var(--accent);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .wf-heading {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+  }
+  .wf-amount {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .wf-sub {
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .wf-cta {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 8px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: auto;
+  }
+  .wf-cta.outline {
+    background: transparent;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+  }
+  .wf-divider { height: 1px; background: var(--border); }
+  .wf-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .wf-icon {
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    background: var(--glass2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+  }
+  .wf-step-label {
+    font-size: 9px;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+  .wf-step-label strong { color: var(--white); display: block; font-size: 10px; }
+  .wf-progress {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .wf-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .wf-check {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    border: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin: 0 auto;
+  }
+  .wf-title {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 8px 14px 12px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .wf-camera-box {
+    background: rgba(0,0,0,0.4);
+    border: 1.5px dashed rgba(16,185,129,0.5);
+    border-radius: 8px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 9px;
+    color: var(--accent);
+    font-weight: 600;
+    min-height: 60px;
+  }
+  .wf-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wf-tl-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .wf-tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+  }
+  .wf-tl-dot.done { background: var(--accent); }
+  .wf-tl-dot.active {
+    background: transparent;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 6px rgba(16,185,129,0.5);
+  }
+  .wf-tl-dot.pending { background: var(--border); }
+  .wf-tl-text { font-size: 9px; color: var(--muted); line-height: 1.4; }
+  .wf-tl-text strong { color: var(--white); font-size: 9px; display: block; }
+  .wf-bank-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .wf-bank-logo {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--accent);
+    font-weight: 800;
+  }
+  .wf-bank-name { font-size: 10px; font-weight: 600; color: var(--white); }
+  .wf-bank-sub { font-size: 8px; color: var(--muted); }
+  .wf-aa-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+  }
+  .wf-aa-step {
+    flex: 1;
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 8px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .wf-aa-step.done { border-color: rgba(16,185,129,0.3); color: var(--accent); }
+  .wf-aa-step-num {
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  /* ===== METRICS ===== */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .metric-item {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+  }
+  .metric-item:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .metric-item.north-star {
+    border-color: rgba(16,185,129,0.3);
+    background: var(--accent-light);
+    grid-column: 1 / -1;
+  }
+  .metric-ns-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .metric-ns-value {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  .metric-ns-sub { font-size: 13px; color: var(--muted); }
+  .metric-icon { font-size: 20px; margin-bottom: 10px; }
+  .metric-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+  .metric-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ===== EXPERIMENT ===== */
+  .exp-phases {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .exp-phase {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+    transition: all 0.25s;
+  }
+  .exp-phase:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .exp-phase-num {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .exp-phase-timeline {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .exp-phase-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  .exp-phase-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .exp-success {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 8px;
+    padding: 7px 12px;
+  }
+  .exp-learning {
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .exp-learning strong { color: var(--white); }
+
+  /* ===== RESULT ===== */
+  .result-disclaimer {
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.15);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #f59e0b;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+  .result-impacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .impact-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.25s;
+  }
+  .impact-card:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .impact-value {
+    font-family: var(--font-display);
+    font-size: 38px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .impact-label {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .learnings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .learning-item {
+    display: flex;
+    gap: 16px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    align-items: flex-start;
+    transition: all 0.25s;
+  }
+  .learning-item:hover { border-color: rgba(16,185,129,0.2); background: var(--glass2); }
+  .learning-num {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent);
+    background: var(--accent-light);
+    border: 1px solid rgba(16,185,129,0.2);
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .learning-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .learning-text strong { color: var(--white); }
+
+  /* ===== PM SKILLS TABLE ===== */
+  .skills-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .skills-table thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .skills-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+  .skills-table tbody tr:last-child { border-bottom: none; }
+  .skills-table tbody tr:hover { background: var(--glass); }
+  .skills-table td {
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--muted);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .skills-table td:first-child { color: var(--white); font-weight: 600; }
+  .skill-chip {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 1px solid rgba(16,185,129,0.2);
+    margin: 1px 2px;
+  }
+
+  /* ===== FINAL CALLOUT ===== */
+  .final-callout {
+    background: var(--glass);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 20px;
+    padding: 52px;
+    text-align: center;
+    margin: 80px auto;
+    max-width: 1100px;
+    padding-left: 24px;
+    padding-right: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-callout::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .final-callout h2 {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .final-callout p {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 560px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    border-radius: 10px;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(16,185,129,0.3); }
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--glass2);
+    color: var(--white);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: rgba(16,185,129,0.3); color: var(--accent); transform: translateY(-1px); }
+  .btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a {
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  footer a:hover { color: var(--accent); }
+  .footer-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  /* ===== GLOW LINES ===== */
+  .glow-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.3;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  /* ===== TAGS ===== */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--glass2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ===== CONTEXT BOX ===== */
+  .context-box {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 32px;
+  }
+  .context-box p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+  }
+  .context-box p strong { color: var(--white); }
+
+  /* ===== BENCHMARK STAT ===== */
+  .benchmark {
+    background: var(--glass2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .benchmark-stat {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--yellow);
+    line-height: 1;
+  }
+  .benchmark-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.5;
+    max-width: 380px;
+  }
+  .benchmark-desc strong { color: var(--white); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .nav-progress { display: none; }
+    .hero { padding-top: 100px; }
+    .funnel-label, .funnel-pct { display: none; }
+    .exp-phase { grid-template-columns: 1fr; gap: 16px; }
+    footer { flex-direction: column; text-align: center; }
+  }
+  @media (max-width: 520px) {
+    .metric-cards { grid-template-columns: repeat(2, 1fr); }
+    .wireframes-row { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-mark">KM</div>
+    <span class="nav-logo-name">Kartik Mankar</span>
+  </a>
+
+  <nav class="nav-progress" id="nav-progress">
+    <a href="#problem" class="nav-step active" data-section="problem">Problem</a>
+    <div class="nav-sep"></div>
+    <a href="#users" class="nav-step" data-section="users">Users</a>
+    <div class="nav-sep"></div>
+    <a href="#research" class="nav-step" data-section="research">Research</a>
+    <div class="nav-sep"></div>
+    <a href="#insight" class="nav-step" data-section="insight">Insight</a>
+    <div class="nav-sep"></div>
+    <a href="#opportunity" class="nav-step" data-section="opportunity">Opportunity</a>
+    <div class="nav-sep"></div>
+    <a href="#prioritization" class="nav-step" data-section="prioritization">Prioritization</a>
+    <div class="nav-sep"></div>
+    <a href="#solution" class="nav-step" data-section="solution">Solution</a>
+    <div class="nav-sep"></div>
+    <a href="#prototype" class="nav-step" data-section="prototype">Prototype</a>
+    <div class="nav-sep"></div>
+    <a href="#metrics" class="nav-step" data-section="metrics">Metrics</a>
+    <div class="nav-sep"></div>
+    <a href="#experiment" class="nav-step" data-section="experiment">Experiment</a>
+    <div class="nav-sep"></div>
+    <a href="#result" class="nav-step" data-section="result">Result</a>
+  </nav>
+
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8.5 2L3.5 7L8.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to Portfolio
+  </a>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-tag">Case Study 03 · Consumer FinTech · Product Strategy & Analytics</div>
+  <h1>FinTech Loan Funnel<br/><span>Optimization</span></h1>
+  <p class="hero-sub">Reducing drop-offs in digital lending journeys through friction mapping, Account Aggregator integration, and UX optimization — a comprehensive consumer FinTech product analysis.</p>
+
+  <div class="hero-meta">
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Role</span>
+      <span class="hero-meta-value">Product Analyst (Case Study)</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Context</span>
+      <span class="hero-meta-value">Digital Lending Product Audit</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Domain</span>
+      <span class="hero-meta-value">Consumer FinTech / Growth</span>
+    </div>
+    <div class="hero-meta-item">
+      <span class="hero-meta-label">Period</span>
+      <span class="hero-meta-value">2024</span>
+    </div>
+  </div>
+
+  <div class="disclaimer-badge">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M7 4.5V7M7 9.5H7.01" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    Product Analysis — based on digital lending funnel audits and fintech industry research
+  </div>
+
+  <div class="metric-cards">
+    <div class="metric-card">
+      <div class="metric-card-value">20–25%</div>
+      <div class="metric-card-label">Projected conversion lift (end-to-end funnel)</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-value">30%</div>
+      <div class="metric-card-label">Application time reduction projected</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-value">2</div>
+      <div class="metric-card-label">Highest-friction stages identified</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-value">4</div>
+      <div class="metric-card-label">Solution features proposed</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-card-value">3-Phase</div>
+      <div class="metric-card-label">Experiment design with success thresholds</div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-line" style="margin-bottom:0;"></div>
+
+<!-- ===== ABOUT PROJECT ===== -->
+<div class="about-callout">
+  <div class="callout-box" style="margin-top:40px;">
+    <strong>About the Project:</strong> This case study analyzes modern digital lending and consumer FinTech loan applications in India. Focusing on young urban salaried borrowers seeking instant credit, it breaks down the drop-off mechanics across typical onboarding funnels and proposes high-impact architectural and UX interventions — including Account Aggregator integration and eligibility-first design. <em>Framed as an analytical FinTech product design case study.</em>
+  </div>
+</div>
+
+<!-- ===== PROBLEM ===== -->
+<section class="section" id="problem">
+  <div class="section-label">Problem</div>
+  <h2>Most loan applications never complete.<br/>The funnel is the product.</h2>
+
+  <div class="context-box">
+    <p>Consumer fintech loan funnels typically see <strong>60–70% drop-off</strong> from app open to disbursement. For young professionals seeking quick liquidity — often in moments of genuine financial urgency — every friction point is a conversion failure. The application process is not just a compliance requirement; it is the product experience itself.</p>
+  </div>
+
+  <!-- Funnel Visualization -->
+  <div style="position:relative; overflow:visible;">
+    <div class="funnel-wrap" id="funnel-vis">
+
+      <!-- App Open — 100% -->
+      <div class="funnel-stage" style="width:100%;">
+        <div class="funnel-stage-inner" style="background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.25); color:#fff; font-size:13px; font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
+          App Open
+        </div>
+        <span class="funnel-pct" style="color:#10b981;">100%</span>
+      </div>
+
+      <!-- Connector -->
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(16,185,129,0.15);"></div>
+
+      <!-- Registration — 82% -->
+      <div class="funnel-stage" style="width:90%;">
+        <div class="funnel-stage-inner" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.18); color:#fff; font-size:13px; font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#34d399;display:inline-block;flex-shrink:0;"></span>
+          Registration
+        </div>
+        <span class="funnel-pct" style="color:#34d399;">~82%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(16,185,129,0.12);"></div>
+
+      <!-- Eligibility Check — 65% -->
+      <div class="funnel-stage" style="width:78%;">
+        <div class="funnel-stage-inner" style="background:rgba(16,185,129,0.09); border:1px solid rgba(16,185,129,0.14); color:#fff; font-size:13px; font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#6ee7b7;display:inline-block;flex-shrink:0;"></span>
+          Eligibility Check
+        </div>
+        <span class="funnel-pct" style="color:#6ee7b7;">~65%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(16,185,129,0.09);"></div>
+
+      <!-- Income Verification — HIGH DROP ===== -->
+      <div class="funnel-stage" style="width:64%;">
+        <div class="funnel-stage-inner" style="background:rgba(239,68,68,0.16); border:1.5px solid rgba(239,68,68,0.4); color:#fff; font-size:13px; font-weight:700; position:relative;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;flex-shrink:0; box-shadow:0 0 8px rgba(239,68,68,0.7);"></span>
+          Income Verification
+          <span style="position:absolute;top:-22px;right:0;font-size:10px;background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:0.5px; white-space:nowrap;">High Drop-off</span>
+        </div>
+        <span class="funnel-pct" style="color:#ef4444; font-size:13px;">~38%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(239,68,68,0.1);"></div>
+
+      <!-- Document Upload — HIGH DROP -->
+      <div class="funnel-stage" style="width:50%;">
+        <div class="funnel-stage-inner" style="background:rgba(239,68,68,0.12); border:1.5px solid rgba(239,68,68,0.3); color:#fff; font-size:13px; font-weight:700; position:relative;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#f87171;display:inline-block;flex-shrink:0; box-shadow:0 0 8px rgba(248,113,113,0.6);"></span>
+          Document Upload
+          <span style="position:absolute;top:-22px;right:0;font-size:10px;background:#ef4444;color:#fff;padding:2px 8px;border-radius:4px;font-weight:700;letter-spacing:0.5px; white-space:nowrap;">High Drop-off</span>
+        </div>
+        <span class="funnel-pct" style="color:#f87171;">~24%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(239,68,68,0.08);"></div>
+
+      <!-- Review -->
+      <div class="funnel-stage" style="width:38%;">
+        <div class="funnel-stage-inner" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2); color:#fff; font-size:13px; font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;display:inline-block;flex-shrink:0;"></span>
+          Review
+        </div>
+        <span class="funnel-pct" style="color:#f59e0b;">~18%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(245,158,11,0.08);"></div>
+
+      <!-- Approval -->
+      <div class="funnel-stage" style="width:28%;">
+        <div class="funnel-stage-inner" style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.15); color:#fff; font-size:13px; font-weight:600;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#10b981;display:inline-block;flex-shrink:0;"></span>
+          Approval
+        </div>
+        <span class="funnel-pct" style="color:#10b981;">~14%</span>
+      </div>
+
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:10px solid rgba(16,185,129,0.08);"></div>
+
+      <!-- Disbursal -->
+      <div class="funnel-stage" style="width:20%;">
+        <div class="funnel-stage-inner" style="background:var(--accent-light); border:1px solid rgba(16,185,129,0.25); color:var(--accent); font-size:13px; font-weight:700;">
+          Disbursal
+        </div>
+        <span class="funnel-pct" style="color:var(--accent);">~30%</span>
+      </div>
+
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted);">Illustrative funnel based on industry benchmarks. Red stages represent highest observed drop-off points.</div>
+  </div>
+
+  <div class="problem-statement">
+    The bottleneck is not risk assessment — it is the friction in proving that you're creditworthy.
+  </div>
+</section>
+
+<!-- ===== USERS ===== -->
+<section class="section" id="users">
+  <div class="section-label">Users</div>
+  <h2>One audience, three distinct behaviors</h2>
+
+  <div class="grid-3">
+    <!-- Persona 1 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">P1</div>
+      <div class="persona-name">The First-Timer</div>
+      <div class="persona-age">24–26 years · First loan ever</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">High anxiety, low financial literacy. Exploring credit for the first time and unsure about the process, the safety, and the requirements.</p>
+      <div class="persona-row">
+        <span class="persona-row-label">Pain</span>
+        <span class="persona-row-text">Doesn't know what documents are needed upfront — leads to surprise abandonment mid-funnel</span>
+      </div>
+      <div class="persona-row">
+        <span class="persona-row-label success">Win</span>
+        <span class="persona-row-text">Clear, step-by-step guidance at every stage with explanations that reduce anxiety</span>
+      </div>
+    </div>
+
+    <!-- Persona 2 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">P2</div>
+      <div class="persona-name">The Repeat Borrower</div>
+      <div class="persona-age">26–30 years · Used fintech before</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Values speed above all. Has been through the process before and expects it to be faster the second time — is frustrated when it isn't.</p>
+      <div class="persona-row">
+        <span class="persona-row-label">Pain</span>
+        <span class="persona-row-text">Has to re-submit the same documents every single time — feels disrespected by the product</span>
+      </div>
+      <div class="persona-row">
+        <span class="persona-row-label success">Win</span>
+        <span class="persona-row-text">One-tap re-application with pre-filled data and stored verifications</span>
+      </div>
+    </div>
+
+    <!-- Persona 3 -->
+    <div class="persona-card">
+      <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">P3</div>
+      <div class="persona-name">The Explorer</div>
+      <div class="persona-age">28–32 years · Comparing multiple apps</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">Rational decision-maker with multiple tabs open. Will complete the application on whichever app gives the best signal first — before committing effort.</p>
+      <div class="persona-row">
+        <span class="persona-row-label">Pain</span>
+        <span class="persona-row-text">No way to know approval probability before spending 15 minutes completing an application</span>
+      </div>
+      <div class="persona-row">
+        <span class="persona-row-label success">Win</span>
+        <span class="persona-row-text">Know the likely outcome before investing full effort — eligibility signal upfront</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESEARCH ===== -->
+<section class="section" id="research">
+  <div class="section-label">Research</div>
+  <h2>What a public product audit reveals</h2>
+
+  <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:14px 18px;margin-bottom:32px;font-size:13px;color:#f59e0b;line-height:1.6;">
+    <strong style="color:#f59e0b;">Research Methodology:</strong> Public product audit (App Store reviews, social media feedback, public UX discussions), industry funnel benchmarking, and competitive analysis of consumer fintech loan apps. No proprietary data was accessed.
+  </div>
+
+  <div class="grid-2">
+    <div class="research-card">
+      <div class="research-icon" style="font-size:0.85rem;font-weight:700;">01</div>
+      <div class="research-title">App Store Signal</div>
+      <div class="research-text">Recurring themes in 1–3 star reviews consistently mention <strong style="color:var(--white);">"confusing document requirements"</strong>, <strong style="color:var(--white);">"approval rejected without clear reason"</strong>, and <strong style="color:var(--white);">"application process too long."</strong> These are not random complaints — they cluster around the same funnel stages and represent a systemic UX failure.</div>
+    </div>
+
+    <div class="research-card">
+      <div class="research-icon" style="font-size:0.85rem;font-weight:700;">02</div>
+      <div class="research-title">Industry Benchmark</div>
+      <div class="research-text">Consumer fintech loan funnels show an industry average completion rate of <strong style="color:var(--white);">25–35% from start to disbursal</strong>. Top-performing lenders achieve 40–50% through AA-based verification, eligibility-first flows, and document pre-fill. This gap represents a significant, addressable opportunity.</div>
+    </div>
+
+    <div class="research-card">
+      <div class="research-icon" style="font-size:0.85rem;font-weight:700;">03</div>
+      <div class="research-title">Competitive Gap</div>
+      <div class="research-text">Competitors including <strong style="color:var(--white);">KreditBee</strong> and <strong style="color:var(--white);">MoneyView</strong> have integrated Account Aggregator (AA) based income verification into their primary flows — significantly reducing the document upload burden. This is now a feature parity issue, not a differentiator.</div>
+    </div>
+
+    <div class="research-card">
+      <div class="research-icon" style="font-size:0.85rem;font-weight:700;">04</div>
+      <div class="research-title">Drop-off Pattern</div>
+      <div class="research-text"><strong style="color:var(--white);">Income verification and document upload</strong> account for the majority of funnel abandonment in consumer lending. These two stages are where users face the highest cognitive load, the most manual effort, and the most uncertainty about whether their effort will be rewarded.</div>
+    </div>
+  </div>
+
+  <div class="benchmark" style="margin-top:28px;">
+    <div>
+      <div class="benchmark-stat">60–70%</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px;">Avg. funnel drop-off</div>
+    </div>
+    <div style="width:1px;height:50px;background:var(--border);flex-shrink:0;"></div>
+    <div class="benchmark-desc">
+      <strong>The majority of users who start a loan application never complete it.</strong> In a product where disbursing more loans is the core business metric, this is not an operational problem — it is a product design problem.
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSIGHT ===== -->
+<section class="section" id="insight">
+  <div class="section-label">Insight</div>
+  <h2>The problem is not document submission —<br/>it's document anxiety</h2>
+
+  <div class="insights-col">
+    <div class="insight-card">
+      <div class="insight-num">01</div>
+      <div class="insight-text">
+        <strong>Users don't abandon because they can't provide documents — they abandon because they don't know if it's worth the effort.</strong> The decision to submit sensitive financial documents is a trust transaction. If users don't believe approval is likely, they will not complete that transaction. Showing eligibility <em>before</em> asking for documents is the key unlock.
+      </div>
+    </div>
+
+    <div class="insight-card">
+      <div class="insight-num">02</div>
+      <div class="insight-text">
+        <strong>The income verification stage is broken not because of regulation — but because of avoidable UX complexity.</strong> Account Aggregator (RBI-regulated, widely adopted) enables bank-linked income verification in 3 taps. The manual PDF upload alternative creates unnecessary friction and is not a regulatory requirement — it is a design choice that hasn't been revisited.
+      </div>
+    </div>
+
+    <div class="insight-card">
+      <div class="insight-num">03</div>
+      <div class="insight-text">
+        <strong>Trust deficit is the silent killer.</strong> Users who don't understand <em>why</em> they need to submit a specific piece of information — bank statements, PAN, address proof — are far more likely to abandon than users who understand the reason. Contextual micro-copy ("Why we need this") is not a nice-to-have; it is a conversion lever.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OPPORTUNITY ===== -->
+<section class="section" id="opportunity">
+  <div class="section-label">Opportunity</div>
+  <h2>Redesign the funnel around user confidence, not just compliance</h2>
+
+  <div class="context-box">
+    <p>The opportunity is to reduce drop-off at the <strong>two highest-friction stages</strong> — income verification and document upload — by rebuilding these stages around how users think, not just what the product requires. This means showing value first, reducing manual effort, and building trust at every sensitive step.</p>
+  </div>
+
+  <ul class="opp-list">
+    <li>Introduce <strong style="color:var(--white);">AA-based income verification</strong> as the default path — replacing manual bank statement PDF upload with a 3-tap Account Aggregator flow (RBI-regulated, privacy-first)</li>
+    <li>Surface a <strong style="color:var(--white);">real-time eligibility indicator</strong> before the document request stage — so users see their likely loan amount before they commit to the effort of verification</li>
+    <li>Add <strong style="color:var(--white);">contextual guidance micro-copy</strong> at each sensitive step — one sentence of plain language explaining why each piece of information is needed builds trust and reduces abandonment</li>
+  </ul>
+
+  <div class="opp-sizing">
+    <strong style="color:var(--accent);">Opportunity Sizing:</strong> Even a 5% improvement in end-to-end funnel conversion represents millions of rupees in additional loan disbursals at scale. At the user acquisition cost typical of consumer fintech, retaining users already in the funnel is dramatically more cost-efficient than acquiring new ones.
+  </div>
+</section>
+
+<!-- ===== PRIORITIZATION ===== -->
+<section class="section" id="prioritization">
+  <div class="section-label">Prioritization</div>
+  <h2>Stage by stage, in order of impact</h2>
+
+  <div style="background:var(--glass);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+    <table class="prio-table">
+      <thead>
+        <tr>
+          <th style="width:72px;">Priority</th>
+          <th>Feature</th>
+          <th>Drop-off Stage Addressed</th>
+          <th>Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="prio-badge prio-p0">P0</span></td>
+          <td class="prio-feature">AA-Based Income Verification</td>
+          <td>Income Verification (highest drop-off)</td>
+          <td>Addresses the single largest drop-off stage. Regulatory framework exists. High impact, feasible now.</td>
+        </tr>
+        <tr>
+          <td><span class="prio-badge prio-p1">P1</span></td>
+          <td class="prio-feature">Real-Time Eligibility Indicator</td>
+          <td>Start → Income Verification conversion</td>
+          <td>Changes the user's risk calculus before they invest effort. Unlocks Explorer persona conversion.</td>
+        </tr>
+        <tr>
+          <td><span class="prio-badge prio-p2">P2</span></td>
+          <td class="prio-feature">Smart Document Camera + AI Pre-fill</td>
+          <td>Document Upload</td>
+          <td>Reduces manual effort and error rates at the second-highest drop-off stage.</td>
+        </tr>
+        <tr>
+          <td><span class="prio-badge prio-p3">P3</span></td>
+          <td class="prio-feature">Bureau-Pre-filled Form Data</td>
+          <td>Manual Form Entry</td>
+          <td>Reduces friction at the top of the funnel. Lower drop-off impact than P0/P1, but improves experience quality.</td>
+        </tr>
+        <tr>
+          <td><span class="prio-badge prio-p4">P4</span></td>
+          <td class="prio-feature">One-Tap Re-application</td>
+          <td>Repeat Borrower Flow</td>
+          <td>High value for repeat cohort, but smaller addressable population than first-time applicants. Validate P0-P2 first.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="background:var(--glass2);border:1px solid var(--border);border-radius:12px;padding:18px 22px;margin-top:20px;font-size:14px;color:var(--muted);line-height:1.6;">
+    <strong style="color:var(--white);">Prioritization reasoning:</strong> Fix the highest drop-off stage first. Validate with data. Then expand. Each subsequent priority addresses a lower-impact (but still material) friction point. This sequencing allows the team to validate learning before committing full engineering effort.
+  </div>
+</section>
+
+<!-- ===== SOLUTION ===== -->
+<section class="section" id="solution">
+  <div class="section-label">Solution</div>
+  <h2>Four changes, one goal: application completion</h2>
+
+  <div class="grid-2">
+    <!-- Solution 1 -->
+    <div class="solution-card">
+      <div class="solution-num">Feature 01 · P0</div>
+      <div class="solution-title">AA-Based Income Verification</div>
+      <div class="solution-desc">Replace the manual bank statement PDF upload with Account Aggregator (AA) — the RBI-regulated data-sharing framework. The user connects their bank account in 3 taps. No PDF download, no upload, no file format errors. Income data flows directly and securely from the bank to the digital lending platform's risk engine.</div>
+      <span class="solution-tag">Kills highest drop-off stage</span>
+    </div>
+
+    <!-- Solution 2 -->
+    <div class="solution-card">
+      <div class="solution-num">Feature 02 · P1</div>
+      <div class="solution-title">Eligibility Meter — Show the Reward First</div>
+      <div class="solution-desc">Show loan eligibility estimate at the very START of the application, before asking for any documents. Based on minimal inputs (mobile number + PAN), surface a personalised "You're likely eligible for ₹X" indicator. Users see the reward before they invest effort — converting Explorers and reducing early abandonment.</div>
+      <span class="solution-tag">Unlocks eligibility-first philosophy</span>
+    </div>
+
+    <!-- Solution 3 -->
+    <div class="solution-card">
+      <div class="solution-num">Feature 03 · P1</div>
+      <div class="solution-title">Contextual Guidance System</div>
+      <div class="solution-desc">At each sensitive step — bank account connection, PAN submission, address proof upload — surface a one-sentence contextual explanation in plain, friendly language. "Why do we need your bank account? To verify your income digitally, without you needing to upload any documents." Trust-building micro-copy is a conversion lever, not a nice-to-have.</div>
+      <span class="solution-tag">Reduces trust-driven abandonment</span>
+    </div>
+
+    <!-- Solution 4 -->
+    <div class="solution-card">
+      <div class="solution-num">Feature 04 · P2</div>
+      <div class="solution-title">Smart Document Camera</div>
+      <div class="solution-desc">For documents that still require physical upload (address proof, etc.), replace the generic file-picker with an in-app camera experience featuring real-time edge detection, automatic crop and de-skew, and AI-powered key field extraction — pre-filling the relevant form fields automatically. Dramatically reduces upload failure rates and user effort.</div>
+      <span class="solution-tag">Eliminates upload friction</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROTOTYPE ===== -->
+<section class="section" id="prototype">
+  <div class="section-label">Prototype</div>
+  <h2>5 screens that change the funnel</h2>
+
+  <div class="wireframes-row">
+
+    <!-- Screen 1: Eligibility First -->
+    <div class="wireframe">
+      <div class="wf-statusbar">
+        <span>9:41</span>
+        <span>●●●</span>
+      </div>
+      <div class="wf-body">
+        <div class="wf-chip">Your Offer</div>
+        <div class="wf-heading">See your loan offer before you apply</div>
+        <div style="height:1px;background:var(--border);"></div>
+        <div style="text-align:center;padding:10px 0;">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:4px;">You're likely eligible for</div>
+          <div class="wf-amount">₹2.5L</div>
+          <div style="font-size:8px;color:var(--accent);margin-top:4px;">● Pre-approved estimate</div>
+        </div>
+        <div style="background:var(--glass2);border:1px solid var(--border);border-radius:6px;padding:8px;">
+          <div style="font-size:9px;color:var(--muted);">Rate as low as</div>
+          <div style="font-size:11px;font-weight:700;color:var(--white);">18% p.a.</div>
+        </div>
+        <div class="wf-progress">
+          <div class="wf-progress-fill" style="width:15%;background:var(--accent);"></div>
+        </div>
+        <div style="font-size:8px;color:var(--muted);">Step 1 of 6</div>
+        <div class="wf-cta" style="margin-top:auto;">Apply Now →</div>
+        <div class="wf-cta outline" style="height:28px;font-size:10px;">View Full Details</div>
+      </div>
+      <div class="wf-title">Screen 1 · Eligibility First</div>
+    </div>
+
+    <!-- Screen 2: AA Connect -->
+    <div class="wireframe">
+      <div class="wf-statusbar">
+        <span>9:41</span>
+        <span>●●●</span>
+      </div>
+      <div class="wf-body">
+        <div class="wf-chip">Income Verification</div>
+        <div class="wf-heading">Connect your bank — no uploads needed</div>
+        <div style="font-size:8px;color:var(--accent);padding:6px;background:var(--accent-light);border-radius:6px;line-height:1.4;">Powered by RBI-regulated Account Aggregator. We only read — never move — your money.</div>
+        <div class="wf-aa-steps">
+          <div class="wf-aa-step done"><div class="wf-aa-step-num">✓</div><div>Select Bank</div></div>
+          <div class="wf-aa-step active" style="border-color:rgba(16,185,129,0.4);"><div class="wf-aa-step-num" style="color:var(--accent);">2</div><div>Authorise</div></div>
+          <div class="wf-aa-step"><div class="wf-aa-step-num" style="color:var(--muted);">3</div><div>Done</div></div>
+        </div>
+        <div class="wf-bank-row">
+          <div class="wf-bank-logo">SBI</div>
+          <div>
+            <div class="wf-bank-name">State Bank of India</div>
+            <div class="wf-bank-sub">Ends in ●●●● 4521</div>
+          </div>
+          <div style="margin-left:auto;font-size:9px;color:var(--accent);">✓</div>
+        </div>
+        <div class="wf-bank-row" style="border-color:rgba(16,185,129,0.3);">
+          <div class="wf-bank-logo" style="background:rgba(59,130,246,0.15);color:#60a5fa;">HDFC</div>
+          <div>
+            <div class="wf-bank-name">HDFC Bank</div>
+            <div class="wf-bank-sub">Add this account</div>
+          </div>
+          <div style="margin-left:auto;font-size:14px;color:var(--muted);">+</div>
+        </div>
+        <div class="wf-cta" style="margin-top:auto;">Authorise with OTP →</div>
+      </div>
+      <div class="wf-title">Screen 2 · AA Connect</div>
+    </div>
+
+    <!-- Screen 3: Verification Success -->
+    <div class="wireframe">
+      <div class="wf-statusbar">
+        <span>9:41</span>
+        <span>●●●</span>
+      </div>
+      <div class="wf-body" style="align-items:center;justify-content:center;text-align:center;gap:14px;">
+        <div class="wf-check" style="width:52px;height:52px;font-size:22px;">✓</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:4px;">Income Verified</div>
+          <div style="font-size:9px;color:var(--muted);line-height:1.5;">Your income has been verified securely via Account Aggregator</div>
+        </div>
+        <div style="width:100%;height:1px;background:var(--border);"></div>
+        <div style="width:100%;">
+          <div style="font-size:9px;color:var(--muted);margin-bottom:6px;">Verified details</div>
+          <div style="background:var(--glass2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+            <div style="font-size:9px;color:var(--muted);">Monthly Income</div>
+            <div style="font-size:14px;font-weight:700;color:var(--white);">₹68,400</div>
+          </div>
+        </div>
+        <div class="wf-progress" style="width:100%;">
+          <div class="wf-progress-fill" style="width:55%;"></div>
+        </div>
+        <div style="font-size:8px;color:var(--muted);">Step 3 of 6 — On track</div>
+        <div class="wf-cta" style="width:100%;">Continue →</div>
+      </div>
+      <div class="wf-title">Screen 3 · Verified ✓</div>
+    </div>
+
+    <!-- Screen 4: Smart Camera -->
+    <div class="wireframe">
+      <div class="wf-statusbar">
+        <span>9:41</span>
+        <span style="font-size:10px;font-weight:700;color:var(--accent);">CAMERA</span>
+      </div>
+      <div class="wf-body">
+        <div class="wf-chip">Address Proof</div>
+        <div class="wf-heading">Photograph your Aadhaar</div>
+        <div class="wf-camera-box">
+          <div style="font-size:10px;font-weight:700;color:var(--accent);">DOC</div>
+          <div>Align document in frame</div>
+          <div style="font-size:8px;color:var(--muted);">Auto-capture when aligned</div>
+          <!-- corner markers -->
+          <div style="position:relative;width:80%;height:50px;border:1.5px dashed rgba(16,185,129,0.6);border-radius:4px;display:flex;align-items:center;justify-content:center;">
+            <div style="position:absolute;top:-3px;left:-3px;width:8px;height:8px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);"></div>
+            <div style="position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);"></div>
+            <div style="position:absolute;bottom:-3px;left:-3px;width:8px;height:8px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent);"></div>
+            <div style="position:absolute;bottom:-3px;right:-3px;width:8px;height:8px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);"></div>
+            <span style="font-size:8px;color:var(--accent);">● Looks good!</span>
+          </div>
+        </div>
+        <div style="background:var(--accent-light);border:1px solid rgba(16,185,129,0.2);border-radius:6px;padding:8px;">
+          <div style="font-size:8px;color:var(--accent);font-weight:600;">AI Auto-extract</div>
+          <div style="font-size:8px;color:var(--muted);">Name and Address will be filled automatically</div>
+        </div>
+        <div class="wf-cta" style="margin-top:auto;">Capture Document</div>
+        <div class="wf-cta outline" style="height:28px;font-size:10px;">Upload from Gallery</div>
+      </div>
+      <div class="wf-title">Screen 4 · Smart Camera</div>
+    </div>
+
+    <!-- Screen 5: Application Status -->
+    <div class="wireframe">
+      <div class="wf-statusbar">
+        <span>9:41</span>
+        <span>●●●</span>
+      </div>
+      <div class="wf-body">
+        <div class="wf-chip">Application Status</div>
+        <div class="wf-heading">Your application is being reviewed</div>
+        <div style="background:var(--accent-light);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:9px;color:var(--muted);">Expected decision in</div>
+          <div style="font-size:16px;font-weight:800;color:var(--accent);">~4 minutes</div>
+        </div>
+        <div class="wf-timeline">
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot done"></div>
+            <div class="wf-tl-text"><strong>Application Submitted</strong>9:38 AM · Complete</div>
+          </div>
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot done"></div>
+            <div class="wf-tl-text"><strong>Income Verified</strong>Via Account Aggregator</div>
+          </div>
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot done"></div>
+            <div class="wf-tl-text"><strong>Documents Verified</strong>Aadhaar · PAN</div>
+          </div>
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot active"></div>
+            <div class="wf-tl-text"><strong>Credit Assessment</strong>In progress — ~4 min</div>
+          </div>
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot pending"></div>
+            <div class="wf-tl-text"><strong>Approval Decision</strong>Pending</div>
+          </div>
+          <div class="wf-tl-item">
+            <div class="wf-tl-dot pending"></div>
+            <div class="wf-tl-text"><strong>Disbursal</strong>Within 2 hours of approval</div>
+          </div>
+        </div>
+      </div>
+      <div class="wf-title">Screen 5 · App Status</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== METRICS ===== -->
+<section class="section" id="metrics">
+  <div class="section-label">Metrics</div>
+  <h2>Measuring funnel health</h2>
+
+  <div class="metrics-grid">
+    <!-- North Star -->
+    <div class="metric-item north-star">
+      <div class="metric-ns-label">North Star Metric</div>
+      <div class="metric-ns-value">End-to-End Funnel Conversion Rate</div>
+      <div class="metric-ns-sub">% of users who open the app and complete disbursal. This is the definitive measure of the product's success at converting intent into outcome.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">01</div>
+      <div class="metric-name">Stage-Level Drop-off Rate</div>
+      <div class="metric-desc">% of users abandoning at each specific step. Enables pinpointing regression or improvement to individual funnel stages.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">02</div>
+      <div class="metric-name">Application Completion Time</div>
+      <div class="metric-desc">Average minutes from application start to submission. Proxy for friction level across the entire flow.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">03</div>
+      <div class="metric-name">AA Adoption Rate</div>
+      <div class="metric-desc">% of users choosing AA-based income verification vs. manual PDF upload. Measures uptake of the primary friction-reduction feature.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">04</div>
+      <div class="metric-name">Eligibility Meter Engagement</div>
+      <div class="metric-desc">% of users who view their eligibility estimate and then proceed to complete the application. Measures conversion effect of the eligibility-first design.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">05</div>
+      <div class="metric-name">Document Upload Success Rate</div>
+      <div class="metric-desc">% of document uploads accepted on first attempt. Measures quality of the smart camera feature and pre-fill accuracy.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">06</div>
+      <div class="metric-name">Time to Disbursal</div>
+      <div class="metric-desc">Hours from loan approval to money-in-account. A key trust metric — the promise of 'instant' must be kept post-approval.</div>
+    </div>
+
+    <div class="metric-item">
+      <div class="metric-icon" style="font-size:0.85rem;font-weight:700;">07</div>
+      <div class="metric-name">D30 Repeat Application Rate</div>
+      <div class="metric-desc">% of approved users who apply again within 30 days. Measures long-term experience quality and repeat borrower satisfaction.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== EXPERIMENT ===== -->
+<section class="section" id="experiment">
+  <div class="section-label">Experiment</div>
+  <h2>Validate stage by stage</h2>
+
+  <div class="exp-phases">
+    <!-- Phase 1 -->
+    <div class="exp-phase">
+      <div class="exp-phase-num">1</div>
+      <div>
+        <div class="exp-phase-timeline">Phase 1 · Week 1–4</div>
+        <div class="exp-phase-title">Roll out AA Income Verification to 30% of new users</div>
+        <div class="exp-phase-desc">
+          <strong style="color:var(--white);">Hypothesis:</strong> Replacing manual bank statement upload with AA-based verification will significantly reduce drop-off at the income verification stage.<br/><br/>
+          <strong style="color:var(--white);">Setup:</strong> 30% of new applicants (treatment) receive AA-based income verification as default. 70% continue with existing manual upload flow (control). Random assignment at session start.<br/><br/>
+          <strong style="color:var(--white);">Measurement:</strong> Stage-level drop-off rate at income verification step. Time to complete this stage. AA adoption rate among treatment group.
+        </div>
+        <div class="exp-success">
+          ✓ Success threshold: ≥15% reduction in drop-off at the income verification stage vs. control group
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="exp-phase">
+      <div class="exp-phase-num">2</div>
+      <div>
+        <div class="exp-phase-timeline">Phase 2 · Week 5–8</div>
+        <div class="exp-phase-title">Roll out Eligibility Meter to Phase 1 treatment cohort</div>
+        <div class="exp-phase-desc">
+          <strong style="color:var(--white);">Hypothesis:</strong> Showing users their estimated loan eligibility before requesting documents will improve the conversion rate from application start to income verification stage completion.<br/><br/>
+          <strong style="color:var(--white);">Setup:</strong> Applied to users who already experienced AA verification (Phase 1 treatment). Measures the incremental effect of eligibility-first on overall funnel conversion — isolating the impact of showing value first.<br/><br/>
+          <strong style="color:var(--white);">Measurement:</strong> Application start-to-income-verification-completion conversion rate. Eligibility meter engagement rate. Session depth distribution.
+        </div>
+        <div class="exp-success">
+          ✓ Success threshold: ≥10% lift in start-to-verification conversion rate vs. Phase 1 baseline
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="exp-phase">
+      <div class="exp-phase-num">3</div>
+      <div>
+        <div class="exp-phase-timeline">Phase 3 · Week 9–12</div>
+        <div class="exp-phase-title">Roll out Smart Document Camera to remaining upload steps</div>
+        <div class="exp-phase-desc">
+          <strong style="color:var(--white);">Hypothesis:</strong> Replacing the generic file picker with an in-app guided camera experience (edge detection, auto-crop, AI field extraction) will improve document upload success rate on first attempt and reduce abandonment at this stage.<br/><br/>
+          <strong style="color:var(--white);">Setup:</strong> Full treatment group (AA + eligibility meter + smart camera) vs. control group (original flow). Final end-to-end measurement of cumulative impact.<br/><br/>
+          <strong style="color:var(--white);">Measurement:</strong> Document upload success rate (first attempt). Stage drop-off at document upload. Overall end-to-end funnel conversion.
+        </div>
+        <div class="exp-success">
+          ✓ Success threshold: ≥20% improvement in document upload first-attempt success rate
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="exp-learning">
+    <strong>Learning loop design:</strong> Each phase validates independently before the next phase activates. If Phase 1 fails its success threshold, the team pauses, diagnoses, and iterates before proceeding. No full rollout occurs until each stage has individually validated. This protects against compounding unvalidated assumptions — a common failure mode in growth experimentation.
+  </div>
+</section>
+
+<!-- ===== RESULT ===== -->
+<section class="section" id="result">
+  <div class="section-label">Result</div>
+  <h2>Projected impact and PM learnings</h2>
+
+  <div class="result-disclaimer">
+    <strong>Disclaimer:</strong> This is a product analysis case study. All results and impacts described below are <em>projected</em> based on digital lending industry research, Account Aggregator benchmarks, and funnel analytics — not measured outcomes from a single proprietary platform.
+  </div>
+
+  <div class="result-impacts">
+    <div class="impact-card">
+      <div class="impact-value">20–25%</div>
+      <div class="impact-label">Projected improvement in end-to-end funnel conversion rate (start → disbursal)</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-value">30%</div>
+      <div class="impact-label">Projected reduction in average time to complete an application</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-value">↑ Trust</div>
+      <div class="impact-label">Measurable improvement in user trust indicators — session depth, completion confidence, D30 return rate</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 40px;">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--white);margin-bottom:20px;">PM Learnings</div>
+    <div class="learnings-list">
+      <div class="learning-item">
+        <div class="learning-num">01</div>
+        <div class="learning-text">
+          <strong>In consumer fintech, the form IS the product. Friction in the flow is friction with the brand.</strong> Users don't separate "the app experience" from "the loan experience" — it's one single perception of trustworthiness. Every unnecessary tap is a tiny erosion of confidence in the institution, not just the interface.
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">02</div>
+        <div class="learning-text">
+          <strong>Regulatory constraints are often blamed for UX failures that are actually design choices.</strong> "We have to collect bank statements" is true — but how you collect them is entirely a product decision. AA-based verification is RBI-regulated, widely deployed, and dramatically more user-friendly than PDF upload. The friction wasn't required; it was chosen.
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">03</div>
+        <div class="learning-text">
+          <strong>Show the user the reward before you ask for the effort.</strong> Eligibility-first is not just a feature — it is a product philosophy. In any flow where users must invest effort before knowing the outcome, showing the likely outcome first changes the entire conversion dynamic. This principle extends far beyond loan applications.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PM SKILLS TABLE ===== -->
+<section class="section" style="border-top:1px solid var(--border);padding-bottom:40px;">
+  <div class="section-label">Skills Demonstrated</div>
+  <h2 style="margin-bottom:28px;">PM competencies in this case study</h2>
+
+  <div style="background:var(--glass);border:1px solid var(--border);border-radius:16px;overflow:hidden;">
+    <table class="skills-table">
+      <thead>
+        <tr>
+          <th>Competency</th>
+          <th>What I did</th>
+          <th>Tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Problem Definition</td>
+          <td>Reframed "high drop-off" from an operational problem to a product design problem with specific, addressable friction points</td>
+          <td><span class="skill-chip">Framing</span><span class="skill-chip">Root Cause</span></td>
+        </tr>
+        <tr>
+          <td>User Research</td>
+          <td>Developed 3 distinct personas based on behavioral archetypes, each with specific pain points and success conditions</td>
+          <td><span class="skill-chip">Persona Design</span><span class="skill-chip">Behavioral Segmentation</span></td>
+        </tr>
+        <tr>
+          <td>Product Audit</td>
+          <td>Conducted public product audit using App Store reviews, social signals, and industry benchmarks — synthesised into structured findings</td>
+          <td><span class="skill-chip">Qualitative Research</span><span class="skill-chip">Competitive Analysis</span></td>
+        </tr>
+        <tr>
+          <td>Insight Synthesis</td>
+          <td>Identified the underlying psychological driver ("document anxiety") beneath the surface-level symptom ("high drop-off")</td>
+          <td><span class="skill-chip">Insight Generation</span><span class="skill-chip">Empathy</span></td>
+        </tr>
+        <tr>
+          <td>Prioritisation</td>
+          <td>Applied impact-first prioritisation framework (P0→P4), sequenced by funnel stage drop-off magnitude</td>
+          <td><span class="skill-chip">RICE</span><span class="skill-chip">Impact Sequencing</span></td>
+        </tr>
+        <tr>
+          <td>Solution Design</td>
+          <td>Designed 4 complementary features that collectively address the full funnel drop-off problem without conflating problems</td>
+          <td><span class="skill-chip">Feature Design</span><span class="skill-chip">Systems Thinking</span></td>
+        </tr>
+        <tr>
+          <td>Prototyping</td>
+          <td>Created 5 annotated wireframe screens illustrating the proposed UX changes at each key funnel moment</td>
+          <td><span class="skill-chip">Wireframing</span><span class="skill-chip">UX Thinking</span></td>
+        </tr>
+        <tr>
+          <td>Metrics Design</td>
+          <td>Defined North Star metric and 7 supporting metrics with clear measurement rationale for each</td>
+          <td><span class="skill-chip">North Star</span><span class="skill-chip">KPIs</span><span class="skill-chip">Data</span></td>
+        </tr>
+        <tr>
+          <td>Experimentation</td>
+          <td>Designed a 3-phase sequential experiment with independent success thresholds and explicit learning loop structure</td>
+          <td><span class="skill-chip">A/B Testing</span><span class="skill-chip">Experiment Design</span></td>
+        </tr>
+        <tr>
+          <td>FinTech Domain</td>
+          <td>Applied knowledge of Account Aggregator framework, credit bureau data, KYC requirements, and consumer lending flows</td>
+          <td><span class="skill-chip">FinTech</span><span class="skill-chip">Regulation</span><span class="skill-chip">AA Framework</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===== FINAL CALLOUT ===== -->
+<div class="final-callout" style="padding: 52px 24px;">
+  <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">Kartik Mankar · PM Portfolio</div>
+  <h2>Interested in working together?</h2>
+  <p>This is one of five case studies exploring industrial AI, credit risk, consumer fintech, AI launch tooling, and consumer product teardowns. Each demonstrates the full PM framework — from problem to measurable outcome.</p>
+  <div class="btn-row">
+    <a href="index.html" class="btn-primary">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5.5 2L10.5 7L5.5 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      View Full Portfolio
+    </a>
+    <a href="index.html#contact" class="btn-secondary">Get in Touch</a>
+  </div>
+  <div style="display:flex;justify-content:center;gap:12px;margin-top:32px;flex-wrap:wrap;">
+    <a href="case-study-haber.html" class="btn-secondary" style="font-size:12px;padding:8px 16px;">← CS 01: Haber</a>
+    <a href="case-study-credit-risk.html" class="btn-secondary" style="font-size:12px;padding:8px 16px;">← CS 02: Credit Risk</a>
+    <a href="case-study-launchguard.html" class="btn-secondary" style="font-size:12px;padding:8px 16px;">CS 04: LaunchGuard AI →</a>
+    <a href="case-study-food-delivery.html" class="btn-secondary" style="font-size:12px;padding:8px 16px;">CS 05: Food Delivery →</a>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div>© 2026 Kartik Mankar — <a href="index.html">PM Portfolio</a></div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="index.html#work">All Case Studies</a>
+    <a href="index.html#contact">Contact</a>
+  </div>
+  <div style="font-size:12px;color:var(--muted);">Case Study 03 · FinTech Lending · Consumer Product</div>
+</footer>
+
+<!-- ===== INTERSECTION OBSERVER ===== -->
+<script>
+(function() {
+  const sections = document.querySelectorAll('.section[id]');
+  const navSteps = document.querySelectorAll('.nav-step[data-section]');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navSteps.forEach(s => s.classList.remove('active'));
+        const active = document.querySelector(`.nav-step[data-section="${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, {
+    rootMargin: '-30% 0px -60% 0px',
+    threshold: 0
+  });
+
+  sections.forEach(s => obs.observe(s));
+
+  // Smooth scroll for nav steps
+  navSteps.forEach(step => {
+    step.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = step.getAttribute('data-section');
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

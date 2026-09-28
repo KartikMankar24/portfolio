@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Delivery Product Teardown — Kartik Mankar PM Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── DESIGN TOKENS ─────────────────────────────────────── */
+    :root {
+      --bg:           #030d1a;
+      --bg2:          #060f1e;
+      --accent:       #ef4444;
+      --accent2:      #f87171;
+      --accent-light: rgba(239,68,68,0.12);
+      --white:        #ffffff;
+      --muted:        rgba(255,255,255,0.45);
+      --border:       rgba(255,255,255,0.08);
+      --glass:        rgba(255,255,255,0.03);
+      --glass2:       rgba(255,255,255,0.06);
+      --radius:       16px;
+      --radius-sm:    10px;
+      --font-body:    'Inter', sans-serif;
+      --font-head:    'Space Grotesk', sans-serif;
+    }
+
+    /* ─── RESET & BASE ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg);
+      color: var(--white);
+      line-height: 1.7;
+      font-size: 16px;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--accent-light); color: var(--accent2); }
+
+    /* ─── SCROLLBAR ─────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ─── TYPOGRAPHY ────────────────────────────────────────── */
+    h1,h2,h3,h4,h5 { font-family: var(--font-head); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+    a { color: inherit; text-decoration: none; }
+    p { color: rgba(255,255,255,0.75); }
+
+    /* ─── UTILITY ───────────────────────────────────────────── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+    /* ─── NAV ───────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(3,13,26,0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: var(--font-head); font-size: 1.25rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+    .nav-link {
+      font-size: 0.8rem; font-weight: 500; color: var(--muted);
+      padding: 6px 14px; border-radius: 20px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .nav-link:hover {
+      color: var(--white);
+      border-color: var(--border);
+      background: var(--glass2);
+    }
+    .nav-link.back {
+      color: var(--accent2);
+      border-color: rgba(239,68,68,0.25);
+      background: var(--accent-light);
+    }
+    .nav-link.back:hover {
+      background: rgba(239,68,68,0.2);
+      border-color: var(--accent);
+      color: var(--white);
+    }
+
+    /* ─── FRAMEWORK BAR ─────────────────────────────────────── */
+    .framework-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .framework-bar::-webkit-scrollbar { display: none; }
+    .framework-steps {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; gap: 0;
+      min-width: max-content;
+    }
+    .fw-step {
+      display: flex; align-items: center; gap: 0;
+      padding: 10px 0; position: relative;
+    }
+    .fw-step a {
+      font-size: 0.72rem; font-weight: 500;
+      color: var(--muted); padding: 5px 14px;
+      border-radius: 4px;
+      transition: color 0.2s ease;
+      white-space: nowrap;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .fw-step a:hover { color: var(--white); }
+    .fw-step.active a {
+      color: var(--accent);
+      background: var(--accent-light);
+      border-radius: 4px;
+    }
+    .fw-arrow {
+      color: var(--border); font-size: 0.7rem;
+      pointer-events: none; user-select: none;
+      padding: 0 2px;
+    }
+
+    /* ─── HERO ──────────────────────────────────────────────── */
+    .hero {
+      padding: 90px 0 70px;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(239,68,68,0.08) 0%, transparent 70%),
+                  var(--bg);
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 80% 50%, rgba(239,68,68,0.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent2);
+      background: var(--accent-light); border: 1px solid rgba(239,68,68,0.25);
+      padding: 6px 16px; border-radius: 20px; margin-bottom: 24px;
+    }
+    .hero-tag-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .hero h1 {
+      font-size: clamp(2.1rem, 5vw, 3.4rem);
+      font-weight: 800; margin-bottom: 20px;
+      max-width: 760px;
+      background: linear-gradient(160deg, #fff 0%, rgba(255,255,255,0.65) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: rgba(255,255,255,0.6);
+      max-width: 660px; margin-bottom: 32px; line-height: 1.7;
+    }
+    .hero-meta {
+      display: flex; flex-wrap: wrap; gap: 24px;
+      margin-bottom: 28px;
+    }
+    .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .hero-meta-label {
+      font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .hero-meta-value { font-size: 0.88rem; font-weight: 500; color: var(--accent2); }
+    .hero-disclaimer {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.78rem; color: var(--muted);
+      background: var(--glass2); border: 1px solid var(--border);
+      padding: 8px 16px; border-radius: 8px; margin-bottom: 44px;
+    }
+    .hero-disclaimer::before { content: ''; }
+    .hero-metrics {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+    }
+    .metric-card {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 20px 18px;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .metric-card:hover {
+      border-color: rgba(239,68,68,0.3);
+      transform: translateY(-3px);
+    }
+    .metric-num {
+      font-family: var(--font-head); font-size: 1.5rem; font-weight: 800;
+      color: var(--accent); display: block; margin-bottom: 5px;
+    }
+    .metric-label { font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+    /* ─── SECTION BASE ──────────────────────────────────────── */
+    section { padding: 90px 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-label-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--accent); color: var(--white);
+      display: grid; place-items: center;
+      font-size: 0.65rem; font-weight: 800;
+    }
+    .section-head {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800; margin-bottom: 16px; max-width: 680px;
+    }
+    .section-intro {
+      font-size: 1rem; color: rgba(255,255,255,0.6);
+      max-width: 660px; margin-bottom: 48px; line-height: 1.75;
+    }
+
+    /* ─── SECTION BG ALTERNATING ────────────────────────────── */
+    section:nth-child(even) { background: var(--bg2); }
+
+    /* ─── TEARDOWN LABEL BADGE ──────────────────────────────── */
+    .teardown-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent2);
+      background: var(--accent-light); border: 1px solid rgba(239,68,68,0.25);
+      padding: 4px 12px; border-radius: 4px; margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    /* ─── CARDS ─────────────────────────────────────────────── */
+    .card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+    .card:hover {
+      border-color: rgba(239,68,68,0.2);
+      background: var(--glass2);
+    }
+    .card-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .card-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .card-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+
+    /* ─── PROBLEM SECTION ───────────────────────────────────── */
+    .segment-viz { display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
+    .segment-row { display: flex; flex-direction: column; gap: 8px; }
+    .segment-label-row { display: flex; justify-content: space-between; align-items: flex-end; }
+    .segment-name {
+      font-size: 0.88rem; font-weight: 600; color: var(--white);
+    }
+    .segment-count { font-size: 0.78rem; color: var(--muted); }
+    .segment-bar-wrap {
+      height: 12px; background: rgba(255,255,255,0.05);
+      border-radius: 6px; overflow: hidden;
+    }
+    .segment-bar {
+      height: 100%; border-radius: 6px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 1s ease;
+    }
+    .segment-bar.light { width: 65%; background: linear-gradient(90deg, rgba(239,68,68,0.35), rgba(248,113,113,0.25)); }
+    .segment-bar.moderate { width: 25%; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .segment-bar.heavy { width: 10%; background: linear-gradient(90deg, rgba(239,68,68,0.6), rgba(248,113,113,0.45)); }
+    .segment-tag {
+      display: inline-block; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 3px;
+    }
+    .segment-tag.target { background: var(--accent); color: var(--white); }
+    .segment-desc { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+
+    .problem-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .problem-card {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 22px;
+      border-left: 3px solid var(--accent);
+    }
+    .problem-card h4 {
+      font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--white);
+    }
+    .problem-card p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ─── USER PERSONA CARDS ────────────────────────────────── */
+    .persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .persona-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; position: relative;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .persona-card:hover { border-color: rgba(239,68,68,0.2); transform: translateY(-4px); }
+    .persona-card.target-persona {
+      border-color: rgba(239,68,68,0.4);
+      background: rgba(239,68,68,0.04);
+    }
+    .persona-card.target-persona::after {
+      content: 'TARGET';
+      position: absolute; top: -1px; right: 20px;
+      background: var(--accent); color: var(--white);
+      font-size: 0.6rem; font-weight: 800; letter-spacing: 0.12em;
+      padding: 3px 8px; border-radius: 0 0 6px 6px;
+    }
+    .persona-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 1.3rem; margin-bottom: 16px;
+      background: var(--glass2); border: 1px solid var(--border);
+    }
+    .persona-name {
+      font-family: var(--font-head); font-size: 1.05rem; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .persona-meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; }
+    .persona-freq {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; font-weight: 600; color: var(--accent2);
+      background: var(--accent-light); padding: 4px 10px; border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    .persona-section { margin-bottom: 12px; }
+    .persona-section-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 5px;
+    }
+    .persona-section p { font-size: 0.83rem; color: rgba(255,255,255,0.7); }
+    .persona-quote {
+      font-style: italic; font-size: 0.83rem;
+      color: rgba(255,255,255,0.6);
+      border-left: 2px solid var(--accent);
+      padding-left: 12px; margin-top: 14px;
+    }
+
+    .focus-box {
+      background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius); padding: 28px; margin-top: 32px;
+    }
+    .focus-box h3 {
+      font-size: 1.05rem; font-weight: 700; margin-bottom: 16px; color: var(--white);
+    }
+    .focus-pills { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+    .focus-pill {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 18px;
+    }
+    .focus-pill-title {
+      font-size: 0.82rem; font-weight: 700; color: var(--accent2); margin-bottom: 4px;
+    }
+    .focus-pill-desc { font-size: 0.78rem; color: var(--muted); }
+
+    /* ─── RESEARCH SECTION ──────────────────────────────────── */
+    .research-disclaimer {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.8rem; color: var(--muted);
+      margin-bottom: 36px;
+    }
+    .research-disclaimer strong { color: var(--accent2); }
+    .research-finding {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 24px;
+      margin-bottom: 16px;
+      display: flex; gap: 20px;
+      transition: border-color 0.25s ease;
+    }
+    .research-finding:hover { border-color: rgba(239,68,68,0.25); }
+    .finding-num {
+      flex-shrink: 0;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent-light); border: 1px solid rgba(239,68,68,0.3);
+      display: grid; place-items: center;
+      font-family: var(--font-head); font-size: 0.85rem;
+      font-weight: 800; color: var(--accent);
+    }
+    .finding-content h4 {
+      font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; color: var(--white);
+    }
+    .finding-content p { font-size: 0.84rem; color: var(--muted); }
+    .source-tag {
+      display: inline-block; font-size: 0.66rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 3px; margin-top: 8px; color: var(--muted);
+    }
+
+    /* ─── INSIGHT SECTION ───────────────────────────────────── */
+    .insight-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .insight-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .insight-card:hover { border-color: rgba(239,68,68,0.25); transform: translateY(-4px); }
+    .insight-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .insight-num {
+      font-family: var(--font-head); font-size: 2.5rem; font-weight: 800;
+      color: var(--accent-light); position: absolute; top: 16px; right: 20px;
+      line-height: 1; pointer-events: none;
+    }
+    .insight-card h3 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 12px;
+      color: var(--accent2);
+    }
+    .insight-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+    /* ─── OPPORTUNITY SECTION ───────────────────────────────── */
+    .opportunity-hero {
+      background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02));
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: var(--radius); padding: 36px; margin-bottom: 32px;
+    }
+    .opportunity-hero h3 {
+      font-size: 1.3rem; font-weight: 800; margin-bottom: 14px; color: var(--white);
+    }
+    .opportunity-hero p { font-size: 0.95rem; color: rgba(255,255,255,0.65); line-height: 1.75; }
+    .hypothesis-box {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 20px 24px; margin-top: 24px;
+    }
+    .hypothesis-box .label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .hypothesis-box p { font-size: 0.9rem; color: rgba(255,255,255,0.7); font-style: italic; }
+    .opportunity-why {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 22px;
+    }
+    .opportunity-why h4 {
+      font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; color: var(--white);
+    }
+    .opportunity-why p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ─── PRIORITIZATION SECTION ────────────────────────────── */
+    .priority-grid { display: grid; gap: 16px; }
+    .priority-item {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 22px 26px;
+      display: flex; gap: 20px; align-items: flex-start;
+      transition: border-color 0.25s ease;
+    }
+    .priority-item:hover { border-color: rgba(239,68,68,0.25); }
+    .priority-badge {
+      flex-shrink: 0;
+      font-family: var(--font-head); font-size: 0.75rem; font-weight: 800;
+      padding: 5px 12px; border-radius: 20px; letter-spacing: 0.08em;
+    }
+    .priority-badge.p0 { background: var(--accent); color: var(--white); }
+    .priority-badge.p1 { background: rgba(239,68,68,0.3); color: var(--accent2); }
+    .priority-badge.p2 { background: rgba(239,68,68,0.15); color: var(--accent2); }
+    .priority-badge.p3 { background: var(--glass2); color: var(--muted); }
+    .priority-content h4 {
+      font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; color: var(--white);
+    }
+    .priority-content p { font-size: 0.83rem; color: var(--muted); }
+    .priority-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .priority-tag {
+      font-size: 0.7rem; font-weight: 600; padding: 3px 10px;
+      border-radius: 4px; background: var(--glass2); border: 1px solid var(--border);
+    }
+    .priority-tag.high-impact { color: #4ade80; border-color: rgba(74,222,128,0.2); background: rgba(74,222,128,0.08); }
+    .priority-tag.med-impact { color: var(--accent2); border-color: rgba(239,68,68,0.2); background: var(--accent-light); }
+    .priority-tag.low-effort { color: #60a5fa; border-color: rgba(96,165,250,0.2); background: rgba(96,165,250,0.08); }
+    .priority-tag.med-effort { color: #fbbf24; border-color: rgba(251,191,36,0.2); background: rgba(251,191,36,0.08); }
+    .priority-tag.high-effort { color: var(--muted); border-color: var(--border); }
+
+    /* ─── SOLUTION SECTION ──────────────────────────────────── */
+    .solution-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .solution-card {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .solution-card:hover { border-color: rgba(239,68,68,0.3); transform: translateY(-5px); }
+    .solution-num {
+      font-family: var(--font-head); font-size: 2.8rem; font-weight: 800;
+      color: rgba(239,68,68,0.1); position: absolute;
+      bottom: 12px; right: 16px; line-height: 1;
+    }
+    .solution-icon {
+      font-size: 1.8rem; margin-bottom: 16px; display: block;
+    }
+    .solution-card h3 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 12px;
+      color: var(--accent2);
+    }
+    .solution-card p { font-size: 0.84rem; color: var(--muted); line-height: 1.7; z-index: 1; position: relative; }
+
+    /* ─── PROTOTYPE SECTION ─────────────────────────────────── */
+    .proto-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .proto-screen {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.25s ease;
+    }
+    .proto-screen:hover { border-color: rgba(239,68,68,0.3); transform: translateY(-5px); }
+    .proto-top {
+      background: var(--glass2); padding: 10px 12px;
+      display: flex; align-items: center; gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .proto-dots { display: flex; gap: 5px; }
+    .proto-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .proto-dot:nth-child(1) { background: #ef4444; }
+    .proto-dot:nth-child(2) { background: #fbbf24; }
+    .proto-dot:nth-child(3) { background: #4ade80; }
+    .proto-title-bar {
+      flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px;
+      font-size: 0.65rem; color: var(--muted); padding: 3px 8px;
+      text-align: center;
+    }
+    .proto-body { padding: 14px; }
+    .proto-screen-label {
+      font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+    }
+
+    /* MEAL PLANNER WIREFRAME */
+    .meal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 10px; }
+    .meal-day { text-align: center; }
+    .meal-day-label { font-size: 0.55rem; color: var(--muted); margin-bottom: 3px; text-transform: uppercase; }
+    .meal-day-card {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 4px 2px;
+      font-size: 0.6rem; color: rgba(255,255,255,0.7); line-height: 1.3;
+      text-align: center;
+    }
+    .meal-day-card.active { border-color: var(--accent); background: var(--accent-light); color: var(--accent2); }
+    .proto-action-row { display: flex; gap: 6px; margin-top: 8px; }
+    .proto-btn {
+      flex: 1; font-size: 0.65rem; font-weight: 700; padding: 6px 4px;
+      border-radius: 5px; text-align: center;
+    }
+    .proto-btn.primary { background: var(--accent); color: var(--white); }
+    .proto-btn.secondary { background: var(--glass2); border: 1px solid var(--border); color: var(--muted); }
+
+    /* PLANNER SETUP */
+    .setup-q { margin-bottom: 8px; }
+    .setup-q-label { font-size: 0.65rem; color: var(--muted); margin-bottom: 3px; }
+    .setup-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+    .setup-chip {
+      font-size: 0.58rem; padding: 3px 7px; border-radius: 10px;
+      background: var(--glass2); border: 1px solid var(--border); color: rgba(255,255,255,0.6);
+    }
+    .setup-chip.sel { background: var(--accent-light); border-color: rgba(239,68,68,0.4); color: var(--accent2); }
+
+    /* STREAK DASHBOARD */
+    .streak-counter {
+      text-align: center; padding: 14px 0;
+    }
+    .streak-num {
+      font-family: var(--font-head); font-size: 2.4rem; font-weight: 800;
+      color: var(--accent); display: block;
+    }
+    .streak-unit { font-size: 0.7rem; color: var(--muted); }
+    .streak-rewards { display: flex; flex-direction: column; gap: 5px; }
+    .streak-reward-item {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.63rem; color: var(--muted);
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 5px; padding: 5px 8px;
+    }
+    .streak-reward-item.unlocked { color: var(--accent2); border-color: rgba(239,68,68,0.25); }
+    .streak-reward-check { color: var(--accent); font-size: 0.75rem; }
+    .streak-bar-wrap { height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+    .streak-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 50%; }
+
+    /* SOCIAL ORDER */
+    .social-link-box {
+      background: var(--glass2); border: 1px dashed rgba(239,68,68,0.3);
+      border-radius: 6px; padding: 8px; text-align: center; margin-bottom: 8px;
+    }
+    .social-link-text { font-size: 0.63rem; color: var(--accent2); margin-bottom: 4px; }
+    .social-copy-btn {
+      font-size: 0.6rem; background: var(--accent); color: var(--white);
+      padding: 3px 10px; border-radius: 4px; display: inline-block;
+    }
+    .social-members { display: flex; flex-direction: column; gap: 4px; }
+    .social-member {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 0.62rem; color: rgba(255,255,255,0.7);
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: 4px; padding: 5px 7px;
+    }
+    .social-member-status { color: #4ade80; font-size: 0.7rem; }
+    .social-member-pending { color: var(--muted); font-size: 0.7rem; }
+
+    /* SMART REORDER BANNER */
+    .reorder-banner {
+      background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(239,68,68,0.06));
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px; padding: 12px; margin-bottom: 8px;
+    }
+    .reorder-time { font-size: 0.6rem; color: var(--muted); margin-bottom: 4px; }
+    .reorder-msg { font-size: 0.72rem; color: var(--white); font-weight: 600; margin-bottom: 8px; }
+    .reorder-restaurant { font-size: 0.63rem; color: var(--muted); margin-bottom: 8px; }
+    .reorder-actions { display: flex; gap: 6px; }
+    .reorder-btn-yes {
+      flex: 2; background: var(--accent); color: var(--white);
+      font-size: 0.65rem; font-weight: 700; padding: 5px 8px;
+      border-radius: 5px; text-align: center;
+    }
+    .reorder-btn-no {
+      flex: 1; background: var(--glass2); border: 1px solid var(--border);
+      font-size: 0.65rem; color: var(--muted); padding: 5px 8px;
+      border-radius: 5px; text-align: center;
+    }
+    .reorder-freq { font-size: 0.62rem; color: var(--muted); margin-top: 6px; text-align: center; }
+
+    /* ─── METRICS SECTION ───────────────────────────────────── */
+    .north-star {
+      background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.04));
+      border: 1px solid rgba(239,68,68,0.25); border-radius: var(--radius);
+      padding: 28px; margin-bottom: 32px;
+      display: flex; gap: 24px; align-items: center; flex-wrap: wrap;
+    }
+    .north-star-icon { font-size: 2rem; }
+    .north-star-label {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+    }
+    .north-star-metric {
+      font-family: var(--font-head); font-size: 1.2rem; font-weight: 800;
+      color: var(--white);
+    }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .metrics-group {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 22px;
+    }
+    .metrics-group h4 {
+      font-size: 0.82rem; font-weight: 700; color: var(--accent2); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .metrics-group h4 span { font-size: 1rem; }
+    .metric-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .metric-list li {
+      font-size: 0.8rem; color: var(--muted); padding-left: 12px;
+      position: relative; line-height: 1.5;
+    }
+    .metric-list li::before {
+      content: '';
+      position: absolute; left: 0; top: 7px;
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ─── EXPERIMENT SECTION ────────────────────────────────── */
+    .phases { display: flex; flex-direction: column; gap: 20px; }
+    .phase {
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      display: flex; gap: 24px;
+      transition: border-color 0.25s ease;
+    }
+    .phase:hover { border-color: rgba(239,68,68,0.25); }
+    .phase-num-wrap { flex-shrink: 0; }
+    .phase-num {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--accent-light); border: 2px solid rgba(239,68,68,0.3);
+      display: grid; place-items: center;
+      font-family: var(--font-head); font-size: 1rem; font-weight: 800;
+      color: var(--accent);
+    }
+    .phase-connector {
+      width: 2px; background: linear-gradient(to bottom, rgba(239,68,68,0.3), transparent);
+      margin: 4px auto 0; height: calc(100% - 48px);
+    }
+    .phase h4 {
+      font-size: 1rem; font-weight: 700; margin-bottom: 4px; color: var(--white);
+    }
+    .phase-timeline {
+      font-size: 0.75rem; color: var(--accent2); font-weight: 600;
+      margin-bottom: 12px;
+    }
+    .phase p { font-size: 0.85rem; color: var(--muted); margin-bottom: 12px; }
+    .phase-success {
+      background: rgba(74,222,128,0.06); border: 1px solid rgba(74,222,128,0.2);
+      border-radius: 6px; padding: 10px 14px;
+    }
+    .phase-success-label {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #4ade80; margin-bottom: 4px;
+    }
+    .phase-success p { font-size: 0.8rem; color: rgba(74,222,128,0.8); margin: 0; }
+
+    /* ─── RESULT SECTION ────────────────────────────────────── */
+    .result-disclaimer {
+      background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 8px; padding: 14px 18px;
+      font-size: 0.8rem; color: rgba(251,191,36,0.8);
+      margin-bottom: 36px; display: flex; align-items: flex-start; gap: 8px;
+    }
+    .result-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 36px; }
+    .result-metric-card {
+      background: var(--glass2); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 22px;
+      text-align: center;
+      transition: border-color 0.25s ease;
+    }
+    .result-metric-card:hover { border-color: rgba(239,68,68,0.3); }
+    .result-num {
+      font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+      color: var(--accent); display: block; margin-bottom: 6px;
+    }
+    .result-metric-label { font-size: 0.8rem; color: var(--muted); }
+    .learnings { display: flex; flex-direction: column; gap: 16px; }
+    .learning {
+      background: var(--glass); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 20px 24px;
+    }
+    .learning-num {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+    }
+    .learning h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; color: var(--white); }
+    .learning p { font-size: 0.85rem; color: var(--muted); }
+
+    /* ─── PM SKILLS TABLE ───────────────────────────────────── */
+    .skills-section {
+      background: var(--bg2);
+      padding: 70px 0;
+    }
+    .skills-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--glass); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .skills-table th {
+      background: var(--accent-light); padding: 14px 20px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent2);
+      text-align: left; border-bottom: 1px solid var(--border);
+    }
+    .skills-table td {
+      padding: 16px 20px; font-size: 0.88rem;
+      border-bottom: 1px solid var(--border);
+      color: rgba(255,255,255,0.75);
+    }
+    .skills-table tr:last-child td { border-bottom: none; }
+    .skills-table tr:hover td { background: var(--glass2); }
+    .skills-table td:first-child {
+      font-weight: 700; color: var(--accent2); width: 200px; white-space: nowrap;
+    }
+
+    /* ─── CALLOUT BOX ───────────────────────────────────────── */
+    .callout {
+      background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.03));
+      border: 1px solid rgba(239,68,68,0.25); border-radius: var(--radius);
+      padding: 40px 36px; margin: 48px 0; text-align: center;
+    }
+    .callout-quote {
+      font-family: var(--font-head); font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 700; color: var(--white); line-height: 1.55;
+      max-width: 700px; margin: 0 auto; font-style: italic;
+    }
+    .callout-quote::before, .callout-quote::after {
+      content: '"'; color: var(--accent); font-size: 1.6em;
+      vertical-align: middle; line-height: 0;
+    }
+
+    /* ─── FOOTER ────────────────────────────────────────────── */
+    footer {
+      background: var(--bg); border-top: 1px solid var(--border);
+      padding: 60px 0 40px;
+    }
+    .footer-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    }
+    .footer-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 32px; margin-bottom: 48px; flex-wrap: wrap;
+    }
+    .footer-logo {
+      font-family: var(--font-head); font-size: 1.3rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 8px;
+    }
+    .footer-tagline { font-size: 0.82rem; color: var(--muted); }
+    .footer-links-head {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent2); margin-bottom: 16px;
+    }
+    .footer-link-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .footer-link-list a {
+      font-size: 0.85rem; color: var(--muted); transition: color 0.2s ease;
+    }
+    .footer-link-list a:hover { color: var(--accent2); }
+    .footer-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 24px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
+    }
+    .footer-copy { font-size: 0.78rem; color: var(--muted); }
+    .footer-disclaimer {
+      font-size: 0.72rem; color: rgba(255,255,255,0.3);
+      max-width: 400px; text-align: right;
+    }
+
+    /* ─── DIVIDER ───────────────────────────────────────────── */
+    .red-divider {
+      height: 2px; width: 40px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      margin: 16px 0;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .nav-links { gap: 4px; }
+      .nav-link { padding: 5px 10px; font-size: 0.75rem; }
+      section { padding: 60px 0; }
+      .hero { padding: 60px 0 50px; }
+      .phase { flex-direction: column; gap: 12px; }
+      .north-star { flex-direction: column; gap: 12px; }
+      .footer-top { flex-direction: column; }
+      .footer-disclaimer { text-align: left; }
+      .research-finding { flex-direction: column; gap: 12px; }
+    }
+    @media (max-width: 480px) {
+      .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+      .proto-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════════════════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">KM</a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">Home</a>
+      <a href="index.html#work" class="nav-link">Work</a>
+      <a href="index.html#about" class="nav-link">About</a>
+      <a href="index.html" class="nav-link back">← Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PM FRAMEWORK BAR
+════════════════════════════════════════════════════════════ -->
+<div class="framework-bar" role="navigation" aria-label="PM Framework steps">
+  <div class="framework-steps">
+    <div class="fw-step"><a href="#problem">Problem</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#users">Users</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#research">Research</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#insight">Insight</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#opportunity">Opportunity</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#prioritization">Prioritization</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#solution">Solution</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#prototype">Prototype</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#metrics">Metrics</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#experiment">Experiment</a></div>
+    <div class="fw-arrow">›</div>
+    <div class="fw-step"><a href="#result">Result</a></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="container">
+    <div class="hero-tag">
+      <div class="hero-tag-dot"></div>
+      Case Study 05 · Consumer Product · Product Teardown
+    </div>
+
+    <h1>Food Delivery: The Moderate User Problem</h1>
+
+    <p class="hero-sub">
+      A product teardown of Zomato's engagement mechanics and a proposed strategy to improve order frequency among mid-tier users — the highest-ROI growth segment in the platform.
+    </p>
+
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Type</span>
+        <span class="hero-meta-value">Product Teardown — Independent Analysis</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Subject</span>
+        <span class="hero-meta-value">Zomato (India)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Domain</span>
+        <span class="hero-meta-value">Consumer Tech / Growth / Engagement</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="hero-meta-label">Period</span>
+        <span class="hero-meta-value">2024</span>
+      </div>
+    </div>
+
+    <div class="hero-disclaimer">
+      Independent product analysis. Not affiliated with or commissioned by Zomato. All data sourced from publicly available reports and product audits.
+    </div>
+
+    <div class="hero-metrics">
+      <div class="metric-card">
+        <span class="metric-num">3</span>
+        <span class="metric-label">User segments analyzed</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-num">15–20%</span>
+        <span class="metric-label">Projected frequency lift</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-num">4</span>
+        <span class="metric-label">Habit-forming features proposed</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-num">10%</span>
+        <span class="metric-label">Gold conversion improvement projected</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-num">3</span>
+        <span class="metric-label">Competitive products analyzed</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════
+     01 — PROBLEM
+════════════════════════════════════════════════════════════ -->
+<section id="problem">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">01</div>
+      Problem
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Zomato's growth problem is not acquisition — it's depth</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Zomato has approximately 17 million monthly transacting users (publicly reported). Heavy users (9+/month) are saturated; new user CAC is prohibitively high. The highest ROI opportunity lies in converting moderate users (4–8/month) into heavy users — a frequency play, not an acquisition play.
+    </p>
+
+    <!-- Segment Visualization -->
+    <div style="background: var(--glass); border: 1px solid var(--border); border-radius: var(--radius); padding: 32px; margin-bottom: 32px;">
+      <h3 style="font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 24px;">User Segment Distribution — Relative Scale</h3>
+
+      <div class="segment-viz">
+        <div class="segment-row">
+          <div class="segment-label-row">
+            <span class="segment-name">Light Users <span style="font-size:0.75rem; color:var(--muted);">(1–3 orders/month)</span></span>
+            <span class="segment-count">~65% of base</span>
+          </div>
+          <div class="segment-bar-wrap"><div class="segment-bar light"></div></div>
+          <div class="segment-desc">Large base, price-sensitive, non-habitual. Triggered by discounts alone.</div>
+        </div>
+
+        <div class="segment-row">
+          <div class="segment-label-row">
+            <span class="segment-name">
+              Moderate Users <span style="font-size:0.75rem; color:var(--muted);">(4–8 orders/month)</span>
+              <span class="segment-tag target">TARGET</span>
+            </span>
+            <span class="segment-count">~25% of base</span>
+          </div>
+          <div class="segment-bar-wrap"><div class="segment-bar moderate"></div></div>
+          <div class="segment-desc">Convenience-driven, highest habit-forming potential, closest to Gold threshold.</div>
+        </div>
+
+        <div class="segment-row">
+          <div class="segment-label-row">
+            <span class="segment-name">Heavy Users <span style="font-size:0.75rem; color:var(--muted);">(9+ orders/month)</span></span>
+            <span class="segment-count">~10% of base</span>
+          </div>
+          <div class="segment-bar-wrap"><div class="segment-bar heavy"></div></div>
+          <div class="segment-desc">Saturated, high AOV, engaged with Zomato Gold. Retain, don't over-invest.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Problem Cards -->
+    <div class="problem-cards">
+      <div class="problem-card">
+        <h4>Problem Statement</h4>
+        <p>Order frequency among moderate users is not growing proportionally to Zomato's overall user base growth — leaving a large, addressable growth delta untapped.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Why It Matters</h4>
+        <p>Each additional order from an existing user costs near-zero in acquisition cost, versus ₹300–500+ to acquire a new user. Frequency is a unit economics lever.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Root Cause Hypothesis</h4>
+        <p>Zomato's product is optimized for first-order and re-activation via discounts — not for building habitual ordering behavior among mid-frequency users.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     02 — USERS
+════════════════════════════════════════════════════════════ -->
+<section id="users">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">02</div>
+      Users
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Three segments, one growth opportunity</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Understanding who uses Zomato — and with what behavior, motivation, and pain — is essential before proposing product changes. Three distinct personas map to the three usage cohorts.
+    </p>
+
+    <div class="persona-grid">
+
+      <!-- Persona 1: Light User -->
+      <div class="persona-card">
+        <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">U1</div>
+        <div class="persona-name">Amrita</div>
+        <div class="persona-meta">26 · Mumbai · Marketing Associate</div>
+        <div class="persona-freq">2 orders/month</div>
+        <div class="persona-section">
+          <div class="persona-section-label">Behavior</div>
+          <p>Orders for weekend treats only. Price is the primary trigger — Amrita waits for discount notifications before opening the app.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Motivation</div>
+          <p>Occasional indulgence; not a food delivery habit.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Pain</div>
+          <p class="persona-quote">"Delivery is too expensive for everyday use. I only order when there's a deal."</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Success State</div>
+          <p>Feels food delivery is consistently worth the cost — not just on deal days.</p>
+        </div>
+      </div>
+
+      <!-- Persona 2: Moderate User (TARGET) -->
+      <div class="persona-card target-persona">
+        <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">U2</div>
+        <div class="persona-name">Rahul</div>
+        <div class="persona-meta">28 · Bangalore · Product Designer</div>
+        <div class="persona-freq">5–6 orders/month</div>
+        <div class="persona-section">
+          <div class="persona-section-label">Behavior</div>
+          <p>Orders when cooking feels like too much effort. Decision-making in the app is slow — he browses but often gives up. No consistent ordering pattern by day or time.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Motivation</div>
+          <p>Convenience. Not excitement — absence of friction.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Pain</div>
+          <p class="persona-quote">"I order when I can't decide what to cook, not because I'm excited about it. The app doesn't help me decide faster."</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Success State</div>
+          <p>Food delivery becomes a planned, habitual part of weekly life — not a last resort.</p>
+        </div>
+      </div>
+
+      <!-- Persona 3: Heavy User -->
+      <div class="persona-card">
+        <div class="persona-avatar" style="font-size:0.85rem;font-weight:700;">U1</div>
+        <div class="persona-name">Priya</div>
+        <div class="persona-meta">30 · Delhi · Startup Founder</div>
+        <div class="persona-freq">10+ orders/month</div>
+        <div class="persona-section">
+          <div class="persona-section-label">Behavior</div>
+          <p>Zomato Gold subscriber. Orders for herself, team lunches, and dinners. High AOV, low price sensitivity. Consistent usage pattern.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Motivation</div>
+          <p>Time savings + variety. Gold benefits reinforce the habit.</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Pain</div>
+          <p class="persona-quote">"Restaurant quality is inconsistent. I wish the app surfaced more reliable repeat options."</p>
+        </div>
+        <div class="persona-section">
+          <div class="persona-section-label">Success State</div>
+          <p>Retained at current engagement level; expands into new product categories (Pro, grocery).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Focus Box -->
+    <div class="focus-box">
+      <h3>Why the moderate user is the right target</h3>
+      <p style="font-size: 0.88rem; color: var(--muted);">
+        Not all user segments offer equal return on product investment. The moderate user cohort sits at a unique intersection of willingness, capability, and proximity to conversion.
+      </p>
+      <div class="focus-pills">
+        <div class="focus-pill">
+          <div class="focus-pill-title">Price Elasticity</div>
+          <div class="focus-pill-desc">More willing to pay than light users. Not strictly discount-dependent.</div>
+        </div>
+        <div class="focus-pill">
+          <div class="focus-pill-title">Habit Gap</div>
+          <div class="focus-pill-desc">High intent, low ritual. The product can close this gap without additional spend.</div>
+        </div>
+        <div class="focus-pill">
+          <div class="focus-pill-title">Conversion Potential</div>
+          <div class="focus-pill-desc">Closest to the Gold subscription threshold — 2–3 more orders/month could tip conversion.</div>
+        </div>
+        <div class="focus-pill">
+          <div class="focus-pill-title">Volume at Scale</div>
+          <div class="focus-pill-desc">~25% of base means even small frequency gains compound into large GMV uplift.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     03 — RESEARCH
+════════════════════════════════════════════════════════════ -->
+<section id="research">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">03</div>
+      Research
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">What the product audit and public data reveal</h2>
+    <div class="red-divider"></div>
+
+    <div class="research-disclaimer">
+      <strong>Research Methodology:</strong> Public product audit of Zomato iOS/Android app; analysis of Zomato earnings reports and investor presentations (publicly available); competitive analysis of Swiggy, Uber Eats, and DoorDash; review of consumer behavior research on food delivery habits and habit formation psychology.
+    </div>
+
+    <div class="research-finding">
+      <div class="finding-num">1</div>
+      <div class="finding-content">
+        <h4>Zomato Gold users order 3–4x more frequently than non-subscribers</h4>
+        <p>Publicly reported in Zomato investor presentations. This confirms that loyalty program engagement drives frequency — but Gold currently targets heavy users, not moderate users who could be converted.</p>
+        <span class="source-tag">Source: Zomato Investor Presentation (Public)</span>
+      </div>
+    </div>
+
+    <div class="research-finding">
+      <div class="finding-num">2</div>
+      <div class="finding-content">
+        <h4>Zomato over-indexes on promotional discounts as an engagement trigger</h4>
+        <p>Product audit finding: The primary re-engagement lever across push notifications, homepage banners, and browse surfaces is discount or coupon-driven. This trains users to wait for discounts rather than building habitual ordering behavior. The product is creating price-sensitive users, not loyal ones.</p>
+        <span class="source-tag">Source: Direct Product Audit (iOS/Android)</span>
+      </div>
+    </div>
+
+    <div class="research-finding">
+      <div class="finding-num">3</div>
+      <div class="finding-content">
+        <h4>Uber Eats and DoorDash use scheduled ordering features that drive frequency</h4>
+        <p>Both platforms offer planned/scheduled ordering flows that reduce in-session decision friction. DoorDash's "Scheduled Delivery" and Uber Eats' recurring order features target the medium-frequency cohort. Neither feature exists in Zomato's current product as of this audit.</p>
+        <span class="source-tag">Source: Competitive Product Audit</span>
+      </div>
+    </div>
+
+    <div class="research-finding">
+      <div class="finding-num">4</div>
+      <div class="finding-content">
+        <h4>Food ordering habits follow routine triggers — time, location, day of week</h4>
+        <p>Consumer behavior research on habit formation (Duhigg, Wood) identifies routine triggers as the primary driver of habitual behavior. Food ordering that becomes habitual is anchored to consistent time-of-day and contextual cues (office lunch, Friday dinner). Zomato's current product does not surface or reinforce these cues.</p>
+        <span class="source-tag">Source: Behavioral Research Review</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     04 — INSIGHT
+════════════════════════════════════════════════════════════ -->
+<section id="insight">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">04</div>
+      Insight
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">The product is optimized for discovery, not habit</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Three core insights emerge from the research — each pointing to the same root cause: Zomato's engagement model is transactional, not habitual. Solving for habit formation without increasing discount spend is the core PM opportunity.
+    </p>
+
+    <div class="insight-cards">
+      <div class="insight-card">
+        <span class="insight-num">01</span>
+        <h3>Discount = Transaction, Not Habit</h3>
+        <p>
+          Every time Zomato triggers an order through a discount, it trains the user to wait for the next discount. The Pavlovian loop being built is: discount arrives → user orders. Remove the discount → no order. This is not habit formation. Habit formation requires non-discount triggers anchored to routine (time, place, social context).
+        </p>
+      </div>
+      <div class="insight-card">
+        <span class="insight-num">02</span>
+        <h3>The 'What Should I Order?' Problem is Unsolved</h3>
+        <p>
+          Moderate users spend significant time in the app deciding — browsing without ordering, or abandoning the app mid-session. Decision fatigue is a silent frequency killer. If Zomato eliminated the need to decide (via AI suggestions, saved plans, smart defaults), the natural order frequency would increase without any price incentive.
+        </p>
+      </div>
+      <div class="insight-card">
+        <span class="insight-num">03</span>
+        <h3>Social Proof & Shared Ordering Are Underutilized</h3>
+        <p>
+          Food is inherently social. Office lunch ordering, ordering with housemates, or sharing food plans with partners are all frequency-driving behaviors that Zomato barely supports. Group ordering, shared carts, and social proof features (friends ordered from here) are largely absent from the current product surface.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     05 — OPPORTUNITY
+════════════════════════════════════════════════════════════ -->
+<section id="opportunity">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">05</div>
+      Opportunity
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Build for routine, not for deals</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      The opportunity is clear: create habit-forming, non-discount features that build ordering routines for the moderate user segment, reducing the cost-per-engagement while increasing natural frequency.
+    </p>
+
+    <div class="opportunity-hero">
+      <h3>Core Opportunity Statement</h3>
+      <p>
+        If Zomato invests in reducing in-session decision friction and introduces routine-building mechanics (meal planning, streak rewards, social ordering, smart reorder), the moderate user cohort will naturally increase order frequency — without incremental discount spend. This creates a better business (lower CAC, better unit economics) and a better product (genuinely useful, not just promotional).
+      </p>
+      <div class="hypothesis-box">
+        <div class="label">Hypothesis</div>
+        <p>If Zomato reduces decision friction and introduces non-discount routine-building mechanics, moderate users will increase order frequency by 15–20% within 90 days of feature adoption — without additional discount spend.</p>
+      </div>
+    </div>
+
+    <div class="card-grid-2">
+      <div class="opportunity-why">
+        <h4>Why This Scale of Opportunity</h4>
+        <p>A 15% frequency increase across Zomato's moderate user base — approximately 4.25 million users — represents hundreds of crores in additional GMV at near-zero incremental CAC. Even a conservative 10% improvement at current average order values creates material business impact.</p>
+      </div>
+      <div class="opportunity-why">
+        <h4>Why Now</h4>
+        <p>Zomato's competitive moat is restaurant density and logistics. As Swiggy closes the gap on supply, product-led engagement differentiation becomes the next frontier. Habit mechanics cannot be copied overnight; they compound over time with user behavior data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     06 — PRIORITIZATION
+════════════════════════════════════════════════════════════ -->
+<section id="prioritization">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">06</div>
+      Prioritization
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Four features, ordered by impact-to-effort</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Using an impact vs. effort framework, four features are identified and sequenced. The goal is to maximize early signal (proving the hypothesis) while sequencing infrastructure-heavy features for later phases.
+    </p>
+
+    <div class="priority-grid">
+      <div class="priority-item">
+        <div>
+          <span class="priority-badge p0">P0</span>
+        </div>
+        <div class="priority-content">
+          <h4>Weekly AI Meal Planner</h4>
+          <p>AI-generated weekly meal suggestions based on past orders, preferences, and time-of-day patterns. Directly addresses decision fatigue — the highest-friction moment in the moderate user journey. Users plan ahead; ordering becomes one tap at mealtime.</p>
+          <div class="priority-tags">
+            <span class="priority-tag high-impact">High Impact</span>
+            <span class="priority-tag med-effort">Medium Effort</span>
+            <span class="priority-tag" style="color: var(--accent2); background: var(--accent-light); border-color: rgba(239,68,68,0.2);">Addresses Core Insight #2</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div>
+          <span class="priority-badge p1">P1</span>
+        </div>
+        <div class="priority-content">
+          <h4>Order Streak Rewards (Non-Discount)</h4>
+          <p>Streak mechanics that reward consistent ordering with access and recognition — not discounts. 3-day streak: priority delivery. 7-day: early restaurant drops. 14-day: surprise dish. Builds habit through variable reward without eroding margins.</p>
+          <div class="priority-tags">
+            <span class="priority-tag high-impact">High Impact</span>
+            <span class="priority-tag low-effort">Low Effort</span>
+            <span class="priority-tag" style="color: var(--accent2); background: var(--accent-light); border-color: rgba(239,68,68,0.2);">Addresses Core Insight #1</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div>
+          <span class="priority-badge p2">P2</span>
+        </div>
+        <div class="priority-content">
+          <h4>Social Ordering — Group Cart + Split Pay</h4>
+          <p>Collaborative ordering: share a link, each person adds their item, one checkout, split payment. Targets the office lunch use case — a high-frequency, high-AOV, naturally social context. High infrastructure cost but high long-term value.</p>
+          <div class="priority-tags">
+            <span class="priority-tag med-impact">Medium Impact</span>
+            <span class="priority-tag high-effort">High Effort</span>
+            <span class="priority-tag" style="color: var(--accent2); background: var(--accent-light); border-color: rgba(239,68,68,0.2);">Addresses Core Insight #3</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="priority-item">
+        <div>
+          <span class="priority-badge p3">P3</span>
+        </div>
+        <div class="priority-content">
+          <h4>Smart Reorder — One-Tap Contextual Suggestion</h4>
+          <p>At 12:30 PM on a Tuesday, if the user has ordered from 'Subway near office' 6 times, show a one-tap banner: 'Your usual?' Leverages existing behavioral data to eliminate the decision entirely at the moment of highest ordering intent.</p>
+          <div class="priority-tags">
+            <span class="priority-tag med-impact">Medium Impact</span>
+            <span class="priority-tag low-effort">Low Effort</span>
+            <span class="priority-tag" style="color: var(--accent2); background: var(--accent-light); border-color: rgba(239,68,68,0.2);">Addresses Core Insight #2</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: var(--glass2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 20px 24px; margin-top: 24px;">
+      <h4 style="font-size: 0.85rem; font-weight: 700; color: var(--white); margin-bottom: 8px;">Prioritization Rationale</h4>
+      <p style="font-size: 0.84rem; color: var(--muted);">Start with what reduces friction (Meal Planner) and builds habit without discounts (Streaks) — these prove the core hypothesis fastest. Smart Reorder is low effort but medium signal. Social Ordering requires payment infrastructure changes and is sequenced after proving the habit mechanics work. All four features compound: a user who plans meals is more likely to maintain a streak and reorder familiar meals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     07 — SOLUTION
+════════════════════════════════════════════════════════════ -->
+<section id="solution">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">07</div>
+      Solution
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Four product bets on habit formation</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Each feature targets a specific friction point in the moderate user journey. Together, they create an ecosystem of habit: plan → order → reward → repeat.
+    </p>
+
+    <div class="solution-grid">
+      <div class="solution-card">
+        <span class="solution-icon" style="font-size:0.85rem;font-weight:700;">01</span>
+        <h3>Weekly AI Meal Planner</h3>
+        <p>AI-generated weekly meal suggestions based on past order history, cuisine preferences, time-of-day patterns, and dietary inputs. Users 'plan' 3–5 meals for the week. At mealtime, a single tap converts the plan into an order. Decision fatigue is eliminated before it occurs.</p>
+        <span class="solution-num">01</span>
+      </div>
+      <div class="solution-card">
+        <span class="solution-icon" style="font-size:0.85rem;font-weight:700;">02</span>
+        <h3>Order Streak Rewards</h3>
+        <p>Streak mechanics with non-discount rewards: <strong style="color:var(--accent2);">3-day streak</strong> → priority delivery. <strong style="color:var(--accent2);">7-day streak</strong> → early access to new restaurant drops. <strong style="color:var(--accent2);">14-day streak</strong> → surprise dish from a curated restaurant. No coupons. Access, recognition, and delight instead.</p>
+        <span class="solution-num">02</span>
+      </div>
+      <div class="solution-card">
+        <span class="solution-icon" style="font-size:0.85rem;font-weight:700;">03</span>
+        <h3>Social Ordering</h3>
+        <p>'Ordering with colleagues?' — Share a link, each team member adds their item to a group cart, single checkout, split payment automatically. Targets the office lunch use case: a natural, repeated, high-AOV social ordering occasion that the product currently does not support.</p>
+        <span class="solution-num">03</span>
+      </div>
+      <div class="solution-card">
+        <span class="solution-icon" style="font-size:0.85rem;font-weight:700;">04</span>
+        <h3>Smart Reorder</h3>
+        <p>At 12:30 PM on a Tuesday, if the user has ordered from 'Subway near office' 6 times before, the app surfaces a one-tap banner: <em style="color:var(--accent2);">'Your usual order?'</em> Tap to reorder. No browsing. No deciding. Zero friction at the exact moment of highest ordering intent — powered by existing behavioral data.</p>
+        <span class="solution-num">04</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     08 — PROTOTYPE
+════════════════════════════════════════════════════════════ -->
+<section id="prototype">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">08</div>
+      Prototype
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Five screens</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      CSS wireframe mockups illustrating the key product surfaces. These represent conceptual flows — visual fidelity is intentionally schematic to focus on UX structure and information hierarchy.
+    </p>
+
+    <div class="proto-grid">
+
+      <!-- Screen 1: Meal Planner Home -->
+      <div class="proto-screen">
+        <div class="proto-top">
+          <div class="proto-dots">
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+          </div>
+          <div class="proto-title-bar">Zomato · Meal Planner</div>
+        </div>
+        <div class="proto-body">
+          <div class="proto-screen-label">Screen 1 — Meal Planner Home</div>
+          <div style="font-size: 0.7rem; font-weight: 700; color: var(--white); margin-bottom: 8px;">This Week's Plan</div>
+          <div class="meal-grid">
+            <div class="meal-day">
+              <div class="meal-day-label">Mon</div>
+              <div class="meal-day-card active">Biryani<br/>Paradise</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Tue</div>
+              <div class="meal-day-card">Subway<br/>Wrap</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Wed</div>
+              <div class="meal-day-card">Thai<br/>Bowl</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Thu</div>
+              <div class="meal-day-card">+<br/>Plan</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Fri</div>
+              <div class="meal-day-card">+<br/>Plan</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Sat</div>
+              <div class="meal-day-card">+<br/>Plan</div>
+            </div>
+            <div class="meal-day">
+              <div class="meal-day-label">Sun</div>
+              <div class="meal-day-card">+<br/>Plan</div>
+            </div>
+          </div>
+          <div style="background: var(--accent-light); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 8px; margin: 8px 0;">
+            <div style="font-size: 0.62rem; color: var(--accent2); font-weight: 600; margin-bottom: 2px;">Today's Suggestion</div>
+            <div style="font-size: 0.65rem; color: var(--white);">Biryani Paradise — Chicken Dum Biryani</div>
+            <div style="font-size: 0.6rem; color: var(--muted);">Rating 4.3 · 28 min · ₹220</div>
+          </div>
+          <div class="proto-action-row">
+            <div class="proto-btn primary">Order Now</div>
+            <div class="proto-btn secondary">Swap</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 2: Planner Setup -->
+      <div class="proto-screen">
+        <div class="proto-top">
+          <div class="proto-dots">
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+          </div>
+          <div class="proto-title-bar">Zomato · Meal Preferences</div>
+        </div>
+        <div class="proto-body">
+          <div class="proto-screen-label">Screen 2 — Planner Setup</div>
+          <div style="font-size: 0.72rem; font-weight: 700; color: var(--white); margin-bottom: 4px;">Tell us your preferences</div>
+          <div style="font-size: 0.62rem; color: var(--muted); margin-bottom: 12px;">Step 1 of 3 · Takes 30 seconds</div>
+
+          <div class="setup-q">
+            <div class="setup-q-label">Favourite cuisines</div>
+            <div class="setup-chips">
+              <div class="setup-chip sel">North Indian</div>
+              <div class="setup-chip sel">Chinese</div>
+              <div class="setup-chip">South Indian</div>
+              <div class="setup-chip">Thai</div>
+              <div class="setup-chip">Biryani</div>
+            </div>
+          </div>
+          <div class="setup-q" style="margin-top: 10px;">
+            <div class="setup-q-label">Dietary preference</div>
+            <div class="setup-chips">
+              <div class="setup-chip sel">Non-Veg</div>
+              <div class="setup-chip">Veg Only</div>
+              <div class="setup-chip">Jain</div>
+            </div>
+          </div>
+          <div class="setup-q" style="margin-top: 10px;">
+            <div class="setup-q-label">Budget per meal</div>
+            <div class="setup-chips">
+              <div class="setup-chip">Under ₹150</div>
+              <div class="setup-chip sel">₹150–₹300</div>
+              <div class="setup-chip">₹300+</div>
+            </div>
+          </div>
+          <div class="proto-action-row" style="margin-top: 12px;">
+            <div class="proto-btn primary">Build My Plan →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 3: Streak Dashboard -->
+      <div class="proto-screen">
+        <div class="proto-top">
+          <div class="proto-dots">
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+          </div>
+          <div class="proto-title-bar">Zomato · Your Streak</div>
+        </div>
+        <div class="proto-body">
+          <div class="proto-screen-label">Screen 3 — Streak Dashboard</div>
+          <div class="streak-counter">
+            <span class="streak-num">7</span>
+            <span class="streak-unit">Day Streak</span>
+          </div>
+          <div style="font-size: 0.63rem; color: var(--muted); text-align: center; margin-bottom: 8px;">Keep ordering to unlock the next reward</div>
+          <div class="streak-bar-wrap">
+            <div class="streak-bar-fill" style="width: 50%;"></div>
+          </div>
+          <div style="font-size: 0.6rem; color: var(--muted); text-align: right; margin-bottom: 10px;">7 / 14 days to Surprise Dish</div>
+          <div class="streak-rewards">
+            <div class="streak-reward-item unlocked">
+              <span>Priority Delivery (3-day)</span>
+              <span class="streak-reward-check">✓</span>
+            </div>
+            <div class="streak-reward-item unlocked">
+              <span>Early Restaurant Access (7-day)</span>
+              <span class="streak-reward-check">✓</span>
+            </div>
+            <div class="streak-reward-item">
+              <span>Surprise Dish (14-day)</span>
+              <span style="color: var(--muted); font-size: 0.65rem;">7 days away</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 4: Social Order -->
+      <div class="proto-screen">
+        <div class="proto-top">
+          <div class="proto-dots">
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+          </div>
+          <div class="proto-title-bar">Zomato · Group Order</div>
+        </div>
+        <div class="proto-body">
+          <div class="proto-screen-label">Screen 4 — Social Order Link</div>
+          <div style="font-size: 0.7rem; font-weight: 700; color: var(--white); margin-bottom: 6px;">Ordering with colleagues?</div>
+          <div style="font-size: 0.62rem; color: var(--muted); margin-bottom: 10px;">Share link → everyone adds item → one checkout → split automatically</div>
+          <div class="social-link-box">
+            <div class="social-link-text">zmto.link/grp/rahul-lunch</div>
+            <div class="social-copy-btn">Copy Link</div>
+          </div>
+          <div style="font-size: 0.65rem; font-weight: 700; color: var(--white); margin-bottom: 6px;">Team Members</div>
+          <div class="social-members">
+            <div class="social-member">
+              <span>Rahul (You) · Subway Wrap</span>
+              <span class="social-member-status">✓</span>
+            </div>
+            <div class="social-member">
+              <span>Ananya · Paneer Tikka</span>
+              <span class="social-member-status">✓</span>
+            </div>
+            <div class="social-member">
+              <span>Kiran · Waiting...</span>
+              <span class="social-member-pending" style="font-size:10px;">Pending</span>
+            </div>
+          </div>
+          <div class="proto-action-row" style="margin-top: 10px;">
+            <div class="proto-btn primary">Checkout (3 items)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Screen 5: Smart Reorder Banner -->
+      <div class="proto-screen">
+        <div class="proto-top">
+          <div class="proto-dots">
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+            <div class="proto-dot"></div>
+          </div>
+          <div class="proto-title-bar">Zomato · Home</div>
+        </div>
+        <div class="proto-body">
+          <div class="proto-screen-label">Screen 5 — Smart Reorder Banner</div>
+          <div style="font-size: 0.7rem; font-weight: 700; color: var(--white); margin-bottom: 8px;">Good afternoon, Rahul</div>
+          <div class="reorder-banner">
+            <div class="reorder-time">Tuesday · 12:32 PM</div>
+            <div class="reorder-msg">Your usual order?</div>
+            <div class="reorder-restaurant">Subway · Koramangala · 6 past orders</div>
+            <div class="reorder-actions">
+              <div class="reorder-btn-yes">Yes, Reorder — ₹285</div>
+              <div class="reorder-btn-no">No</div>
+            </div>
+          </div>
+          <div class="reorder-freq">Ordered here 6 times in the last 30 days</div>
+          <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+            <div style="font-size: 0.65rem; color: var(--muted);">Or explore something new today...</div>
+            <div style="display: flex; gap: 6px; margin-top: 6px;">
+              <div style="flex:1; background: var(--glass2); border: 1px solid var(--border); border-radius: 5px; padding: 6px; font-size: 0.6rem; color: rgba(255,255,255,0.6); text-align: center;">Thai Bowl<br/>₹320</div>
+              <div style="flex:1; background: var(--glass2); border: 1px solid var(--border); border-radius: 5px; padding: 6px; font-size: 0.6rem; color: rgba(255,255,255,0.6); text-align: center;">Biryani<br/>₹220</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     09 — METRICS
+════════════════════════════════════════════════════════════ -->
+<section id="metrics">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">09</div>
+      Metrics
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">What success looks like, measured precisely</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      A full metrics framework — from North Star to feature-level — ensures that each product bet is evaluated on its own terms while contributing to the top-line growth objective.
+    </p>
+
+    <div class="north-star">
+      
+      <div>
+        <div class="north-star-label">North Star Metric</div>
+        <div class="north-star-metric">Order Frequency — Moderate User Cohort (orders/user/month)</div>
+        <p style="font-size: 0.82rem; color: var(--muted); margin-top: 6px;">Baseline: 5.2 orders/month (estimated). Target: 6.0–6.2 orders/month within 90 days of feature adoption.</p>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metrics-group">
+        <h4>Meal Planner</h4>
+        <ul class="metric-list">
+          <li>Weekly plan completion rate</li>
+          <li>Plan-to-order conversion rate</li>
+          <li>Average plans created per user</li>
+          <li>Time-to-order from plan view (vs. baseline)</li>
+        </ul>
+      </div>
+      <div class="metrics-group">
+        <h4>Order Streaks</h4>
+        <ul class="metric-list">
+          <li>Active streak users (%)</li>
+          <li>Streak retention: Day 7, Day 14, Day 30</li>
+          <li>Orders placed during streak vs. non-streak periods</li>
+          <li>Streak break recovery rate</li>
+        </ul>
+      </div>
+      <div class="metrics-group">
+        <h4>Social Ordering</h4>
+        <ul class="metric-list">
+          <li>Social order GMV share (%)</li>
+          <li>Average group size per order</li>
+          <li>Repeat social order rate (D30)</li>
+          <li>Link share-to-join conversion rate</li>
+        </ul>
+      </div>
+      <div class="metrics-group">
+        <h4>Smart Reorder</h4>
+        <ul class="metric-list">
+          <li>Reorder banner CTR</li>
+          <li>Reorder frequency per eligible user</li>
+          <li>Session-to-order time (vs. browse flow)</li>
+          <li>User satisfaction score post-reorder</li>
+        </ul>
+      </div>
+      <div class="metrics-group">
+        <h4>Business Metrics</h4>
+        <ul class="metric-list">
+          <li>Moderate user D30 retention</li>
+          <li>Gold conversion rate (moderate cohort)</li>
+          <li>Average Order Value (AOV)</li>
+          <li>Discount-triggered order % (should decline)</li>
+          <li>GMV from moderate user cohort</li>
+        </ul>
+      </div>
+      <div class="metrics-group">
+        <h4>Guardrail Metrics</h4>
+        <ul class="metric-list">
+          <li>Customer satisfaction / NPS (no regression)</li>
+          <li>App session abandonment rate</li>
+          <li>Support ticket volume (feature-related)</li>
+          <li>Restaurant partner experience scores</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     10 — EXPERIMENT
+════════════════════════════════════════════════════════════ -->
+<section id="experiment">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">10</div>
+      Experiment
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Three phases, each earning the right to the next</h2>
+    <div class="red-divider"></div>
+    <p class="section-intro">
+      Phased rollout with specific success thresholds per phase. Each phase tests the hypothesis independently before the next phase scales. No phase 2 without evidence from phase 1.
+    </p>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="phase-num-wrap">
+          <div class="phase-num">1</div>
+        </div>
+        <div style="flex: 1;">
+          <h4>Meal Planner — Initial Rollout</h4>
+          <div class="phase-timeline">Weeks 1–4 · 10% of moderate users · Mumbai</div>
+          <p>Roll out the AI Meal Planner to 10% of moderate users in Mumbai (highest food delivery density market). Measure plan completion rate and order frequency at D14 vs. matched control group. This tests whether reducing decision friction changes ordering behavior without any discount.</p>
+          <p><strong style="color:var(--white); font-size:0.85rem;">Key Measurement:</strong> Order frequency D14: Meal Planner cohort vs. control. Plan creation rate. Plan-to-order conversion.</p>
+          <div class="phase-success">
+            <div class="phase-success-label">Success Threshold</div>
+            <p>≥12% improvement in order frequency in the Meal Planner cohort at D14. If not met, diagnose: is the plan completion rate low (UX problem) or is plan-to-order failing (motivation problem)?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num-wrap">
+          <div class="phase-num">2</div>
+        </div>
+        <div style="flex: 1;">
+          <h4>Order Streaks — A/B vs. Discount Equivalent</h4>
+          <div class="phase-timeline">Weeks 5–8 · A/B Test · National</div>
+          <p>Run an A/B test pitting streak mechanics (non-discount rewards) against an equivalent discount spend directed at the same user cohort. This is the critical test: does a streak — offering access and recognition — drive equal or better frequency improvement than a discount of equivalent cost?</p>
+          <p><strong style="color:var(--white); font-size:0.85rem;">Key Measurement:</strong> D30 retention of streak users vs. discount users. Order frequency at week 8. Unit economics: CAC per incremental order.</p>
+          <div class="phase-success">
+            <div class="phase-success-label">Success Threshold</div>
+            <p>Streak users show ≥D30 retention equal to or better than discount users. If streaks drive equal frequency at lower cost, the business case for non-discount engagement is proven.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-num-wrap">
+          <div class="phase-num">3</div>
+        </div>
+        <div style="flex: 1;">
+          <h4>Social Ordering — Limited City Rollout</h4>
+          <div class="phase-timeline">Weeks 9–16 · Top 5 Cities</div>
+          <p>Limited rollout of Social Ordering in top 5 cities by food delivery density (Bangalore, Mumbai, Delhi, Hyderabad, Pune). Target users with 3+ office-area orders in the last 30 days — proxy for the 'team lunch' use case. Measure group order adoption and repeat group order rate.</p>
+          <p><strong style="color:var(--white); font-size:0.85rem;">Key Measurement:</strong> Group order adoption (% of eligible users who place ≥1 group order). Repeat group order rate (D30). Average group size and GMV per group order vs. solo order.</p>
+          <div class="phase-success">
+            <div class="phase-success-label">Success Threshold</div>
+            <p>≥8% of eligible users place at least one group order. ≥40% of those repeat within 30 days. Group AOV ≥2x solo AOV (expected given group size).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     11 — RESULT
+════════════════════════════════════════════════════════════ -->
+<section id="result">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num">11</div>
+      Result
+      <span class="teardown-badge">Product Teardown — Independent Analysis</span>
+    </div>
+    <h2 class="section-head">Projected outcomes and PM learnings</h2>
+    <div class="red-divider"></div>
+
+    <div class="result-disclaimer">
+      
+      <span><strong>Product Teardown Disclaimer:</strong> All results below are projected based on research, public product audit, behavioral research, and competitive benchmarking. These are not measured outcomes. This is an independent analytical exercise demonstrating PM product sense and hypothesis-driven thinking.</span>
+    </div>
+
+    <div class="result-metrics">
+      <div class="result-metric-card">
+        <span class="result-num">15–20%</span>
+        <span class="result-metric-label">Improvement in order frequency for the moderate user segment within 90 days of feature adoption</span>
+      </div>
+      <div class="result-metric-card">
+        <span class="result-num">10%</span>
+        <span class="result-metric-label">Improvement in Zomato Gold conversion from moderate user cohort, driven by habit proximity</span>
+      </div>
+      <div class="result-metric-card">
+        <span class="result-num">↓</span>
+        <span class="result-metric-label">Reduction in discount-triggered order share — improved unit economics as habit replaces price sensitivity</span>
+      </div>
+    </div>
+
+    <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 20px; color: var(--white);">PM Learnings from This Teardown</h3>
+    <div class="learnings">
+      <div class="learning">
+        <div class="learning-num">Learning 01</div>
+        <h4>Frequency is not a discount problem — it's a habit problem</h4>
+        <p>Discounts acquire behavior; habits retain it. Every time a product uses a discount to trigger usage, it creates a user who waits for the next discount. The highest-leverage engagement work is building routines that don't require financial incentives.</p>
+      </div>
+      <div class="learning">
+        <div class="learning-num">Learning 02</div>
+        <h4>Decision fatigue kills consumer products silently</h4>
+        <p>The best engagement feature is often not a new surface — it's removing the need to decide. Users who have to choose are users who might choose nothing. Reducing optionality at the right moment (Smart Reorder, Meal Planner) is more powerful than increasing it.</p>
+      </div>
+      <div class="learning">
+        <div class="learning-num">Learning 03</div>
+        <h4>Always ask: who is the user growing from, and into?</h4>
+        <p>Design for the trajectory, not the current state. The moderate user is not just a 5x/month orderer — they are a future Gold subscriber and heavy user. The product should design for who they're becoming, not just serve who they are. Segmenting by trajectory rather than snapshot changes every product decision.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PM SKILLS TABLE
+════════════════════════════════════════════════════════════ -->
+<section class="skills-section">
+  <div class="container">
+    <div class="section-label">
+      <div class="section-label-num" style="background: var(--glass2); border: 1px solid var(--border); color: var(--accent2);">PM</div>
+      PM Skills Demonstrated
+    </div>
+    <h2 class="section-head" style="margin-bottom: 32px;">Product sense, demonstrated</h2>
+
+    <table class="skills-table">
+      <thead>
+        <tr>
+          <th>PM Skill</th>
+          <th>Demonstration in This Case Study</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Product Teardown</td>
+          <td>Deep analysis of Zomato's engagement mechanics, discount-dependency, and growth strategy based on public product audit and investor data.</td>
+        </tr>
+        <tr>
+          <td>User Segmentation</td>
+          <td>Identified and rigorously justified the 'moderate user' as the highest-ROI growth segment through behavioral and economic reasoning — not assumed.</td>
+        </tr>
+        <tr>
+          <td>Behavioral Product Thinking</td>
+          <td>Diagnosed the habit formation gap at the root; proposed non-discount engagement mechanics grounded in behavioral science (routine triggers, variable reward, social proof).</td>
+        </tr>
+        <tr>
+          <td>Prioritization</td>
+          <td>Mapped 4 features across impact vs. effort with sequenced rollout rationale. Each feature's priority position is justified, not arbitrary.</td>
+        </tr>
+        <tr>
+          <td>Experimentation Design</td>
+          <td>Designed a 3-phase rollout with specific success thresholds per phase, diagnostic logic for failure cases, and a comparative A/B test against the status quo (discount) baseline.</td>
+        </tr>
+        <tr>
+          <td>Metrics Framework</td>
+          <td>Full metrics framework: North Star, feature-level metrics per product bet, business-level outcomes, and guardrail metrics — demonstrating measurement thinking beyond vanity metrics.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <p class="callout-quote">
+        Consumer product sense is about understanding that every feature either builds a habit or breaks one. The best products do not just solve problems — they create routines.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">KM</div>
+        <div class="footer-tagline">Kartik Mankar · Product Manager</div>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-top: 8px; max-width: 260px;">
+          Building products at the intersection of user behavior, data, and business impact.
+        </p>
+      </div>
+
+      <div>
+        <div class="footer-links-head">Portfolio</div>
+        <ul class="footer-link-list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#work">All Case Studies</a></li>
+          <li><a href="index.html#about">About</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-links-head">Case Studies</div>
+        <ul class="footer-link-list">
+          <li><a href="case-study-haber.html">CS 01 — Industrial AI (Haber)</a></li>
+          <li><a href="case-study-credit-risk.html">CS 02 — Credit Risk Command Center</a></li>
+          <li><a href="case-study-fintech.html">CS 03 — FinTech Loan Funnel</a></li>
+          <li><a href="case-study-launchguard.html">CS 04 — LaunchGuard AI</a></li>
+          <li><a href="case-study-food-delivery.html" style="color: var(--accent2);">CS 05 — Food Delivery Teardown ←</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer-links-head">This Study</div>
+        <ul class="footer-link-list">
+          <li><a href="#problem">Problem</a></li>
+          <li><a href="#users">Users</a></li>
+          <li><a href="#research">Research</a></li>
+          <li><a href="#insight">Insight</a></li>
+          <li><a href="#opportunity">Opportunity</a></li>
+          <li><a href="#solution">Solution</a></li>
+          <li><a href="#metrics">Metrics</a></li>
+          <li><a href="#result">Result</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Kartik Mankar. PM Portfolio.</div>
+      <div class="footer-disclaimer">This page is a product teardown — an independent analytical exercise. Not affiliated with, endorsed by, or commissioned by Zomato or any company mentioned.</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    const sections = document.querySelectorAll('section[id]');
+    const steps = document.querySelectorAll('.fw-step');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          steps.forEach(step => {
+            const link = step.querySelector('a');
+            if (link && link.getAttribute('href') === `#${id}`) {
+              step.classList.add('active');
+            } else {
+              step.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.3, rootMargin: '-60px 0px -40% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  })();
+</script>
+</body>
+</html>

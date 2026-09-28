@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Case Study — Haber Technologies | Kartik Mankar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:   #0d1b2e;
+      --navy-2: #122038;
+      --navy-3: #1a2d46;
+      --teal:   #0ea5e9;
+      --teal-d: #0284c7;
+      --teal-l: #e0f2fe;
+      --white:  #ffffff;
+      --off:    #f8fafc;
+      --text:   #1e293b;
+      --muted:  #64748b;
+      --border: #e2e8f0;
+      --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --card-shadow-lg: 0 4px 6px rgba(0,0,0,.06), 0 10px 40px rgba(0,0,0,.10);
+      --radius: 12px;
+      --radius-lg: 20px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --section-pad: 96px 0;
+    }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Layout ───────────────────────────────────── */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 32px; }
+    .container--wide { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+    section { padding: var(--section-pad); }
+    section:nth-child(even) { background: var(--off); }
+
+    /* ── Typography ───────────────────────────────── */
+    h1, h2, h3, h4 { line-height: 1.2; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; }
+    h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700; }
+    h3 { font-size: 1.15rem; font-weight: 600; }
+    h4 { font-size: .95rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+    p  { color: var(--muted); font-size: .975rem; line-height: 1.75; }
+    strong { color: var(--text); font-weight: 600; }
+    ul { list-style: none; }
+
+    /* ── NAV ──────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 999;
+      background: rgba(13,27,46,.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    nav .nav-inner {
+      max-width: 960px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo { color: var(--white); font-weight: 700; font-size: .95rem; text-decoration: none; }
+    .nav-logo span { color: var(--teal); }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      color: rgba(255,255,255,.6); font-size: .8rem; font-weight: 500;
+      text-decoration: none; text-transform: uppercase; letter-spacing: .05em;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .fw-pill {
+      padding: 4px 10px; border-radius: 100px; font-size: .68rem; font-weight: 600;
+      letter-spacing: .06em; white-space: nowrap; text-decoration: none;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      color: rgba(255,255,255,.45); transition: all .2s;
+    }
+    .fw-pill:hover { color: var(--white); border-color: rgba(255,255,255,.2); }
+    .fw-pill.active {
+      background: rgba(14,165,233,.2); border-color: rgba(14,165,233,.4); color: #0ea5e9;
+    }
+
+    /* ── HERO ─────────────────────────────────────── */
+    .hero {
+      background: var(--navy);
+      padding: 100px 0 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 80% 40%, rgba(14,165,233,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+    .hero .container { position: relative; z-index: 1; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(14,165,233,.15); border: 1px solid rgba(14,165,233,.3);
+      color: var(--teal); font-size: .78rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 100px; margin-bottom: 28px;
+    }
+    .hero-eyebrow::before { content: '◆'; font-size: .6rem; }
+    .hero h1 { color: var(--white); max-width: 740px; margin-bottom: 20px; }
+    .hero h1 span { color: var(--teal); }
+    .hero-subtitle {
+      color: rgba(255,255,255,.6); font-size: 1.05rem;
+      max-width: 600px; margin-bottom: 48px; line-height: 1.7;
+    }
+    .hero-meta {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1px; background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius); overflow: hidden; max-width: 740px;
+    }
+    .hero-meta-item {
+      background: rgba(255,255,255,.04);
+      padding: 18px 22px;
+    }
+    .hero-meta-item .label {
+      display: block; font-size: .7rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: rgba(255,255,255,.4); margin-bottom: 5px;
+    }
+    .hero-meta-item .value {
+      font-size: .88rem; font-weight: 500; color: rgba(255,255,255,.85);
+    }
+
+    /* ── SECTION HEADER ───────────────────────────── */
+    .section-header { margin-bottom: 52px; }
+    .section-tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--teal); margin-bottom: 12px;
+    }
+    .section-tag::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--teal); border-radius: 2px; }
+    .section-header h2 { color: var(--navy); }
+    .section-header p { max-width: 620px; margin-top: 12px; }
+
+    /* ── METRIC CARDS ─────────────────────────────── */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px;
+      margin: 40px 0;
+    }
+    .metric-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px 22px;
+      box-shadow: var(--card-shadow); position: relative; overflow: hidden;
+    }
+    .metric-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--teal);
+    }
+    .metric-card .metric-value {
+      font-size: 2rem; font-weight: 800; color: var(--navy);
+      letter-spacing: -0.03em; line-height: 1;
+      margin-bottom: 6px;
+    }
+    .metric-card .metric-value span { font-size: 1.1rem; color: var(--teal); }
+    .metric-card .metric-label {
+      font-size: .8rem; font-weight: 600; color: var(--muted); line-height: 1.4;
+    }
+    .metric-card .metric-note {
+      margin-top: 10px; font-size: .72rem; color: #94a3b8; line-height: 1.5;
+    }
+
+    /* ── CALLOUT ──────────────────────────────────── */
+    .callout {
+      background: var(--teal-l); border-left: 4px solid var(--teal);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 20px 24px; margin: 32px 0;
+    }
+    .callout .callout-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--teal-d); margin-bottom: 6px;
+    }
+    .callout p { color: var(--navy-3); font-size: .9rem; }
+
+    /* ── PROCESS FLOW ─────────────────────────────── */
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0;
+      margin: 32px 0;
+    }
+    .flow-step {
+      display: flex; align-items: center; gap: 0;
+    }
+    .flow-node {
+      background: var(--navy); color: var(--white);
+      padding: 10px 18px; border-radius: 8px;
+      font-size: .82rem; font-weight: 600; white-space: nowrap;
+    }
+    .flow-node.active { background: var(--teal); }
+    .flow-node.friction {
+      background: #ef4444; outline: 2px solid #fca5a5; outline-offset: 2px;
+    }
+    .flow-arrow {
+      color: var(--muted); font-size: 1.1rem; padding: 0 8px;
+    }
+
+    /* ── VERTICAL FLOW ────────────────────────────── */
+    .vflow { display: flex; flex-direction: column; align-items: flex-start; gap: 0; margin: 32px 0; }
+    .vflow-item { display: flex; align-items: flex-start; gap: 0; }
+    .vflow-connector { display: flex; flex-direction: column; align-items: center; width: 40px; }
+    .vflow-dot {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--teal); border: 3px solid var(--white);
+      box-shadow: 0 0 0 2px var(--teal); flex-shrink: 0; margin-top: 4px;
+    }
+    .vflow-line { width: 2px; background: var(--border); flex: 1; min-height: 28px; }
+    .vflow-content { padding: 0 0 28px 12px; }
+    .vflow-content h4 { color: var(--navy); font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
+    .vflow-content p { font-size: .875rem; color: var(--muted); }
+
+    /* ── STAKEHOLDER GRID ─────────────────────────── */
+    .stakeholder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 32px; }
+    .stakeholder-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--card-shadow);
+    }
+    .stakeholder-card.secondary { background: var(--off); }
+    .stakeholder-badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 100px; font-size: .7rem; font-weight: 700;
+      letter-spacing: .06em; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .badge-primary { background: var(--teal-l); color: var(--teal-d); }
+    .badge-secondary { background: #f1f5f9; color: var(--muted); }
+    .stakeholder-card h3 { color: var(--navy); font-size: 1rem; margin-bottom: 14px; }
+    .stakeholder-row { margin-bottom: 10px; }
+    .stakeholder-row .row-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      color: var(--teal-d); margin-bottom: 2px;
+    }
+    .stakeholder-row p { font-size: .83rem; color: var(--muted); }
+
+    /* ── DISCOVERY FUNNEL ─────────────────────────── */
+    .funnel { display: flex; flex-direction: column; gap: 0; margin: 32px 0; max-width: 500px; }
+    .funnel-step { position: relative; padding: 14px 20px 14px 52px; margin-bottom: 2px; }
+    .funnel-step:nth-child(1)  { background: #0d1b2e; border-radius: 8px 8px 0 0; }
+    .funnel-step:nth-child(2)  { background: #122038; }
+    .funnel-step:nth-child(3)  { background: #1a2d46; }
+    .funnel-step:nth-child(4)  { background: #1e3457; }
+    .funnel-step:nth-child(5)  { background: #1d3f6a; }
+    .funnel-step:nth-child(6)  { background: #11537f; }
+    .funnel-step:nth-child(7)  { background: #0a6598; }
+    .funnel-step:nth-child(8)  { background: #0284c7; border-radius: 0 0 8px 8px; }
+    .funnel-num {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      width: 26px; height: 26px; background: rgba(255,255,255,.15); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700; color: rgba(255,255,255,.8);
+    }
+    .funnel-step span { font-size: .88rem; font-weight: 600; color: rgba(255,255,255,.85); }
+
+    /* ── PAIN POINT CARDS ─────────────────────────── */
+    .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px; }
+    .pain-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--card-shadow);
+    }
+    .pain-title { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .pain-icon { width: 32px; height: 32px; background: var(--teal-l); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+    .pain-row { margin-bottom: 10px; }
+    .pain-row .pain-label { font-size: .7rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .pain-row p { font-size: .84rem; color: var(--muted); }
+    .pain-opportunity { background: var(--teal-l); border-radius: 8px; padding: 10px 14px; margin-top: 14px; font-size: .83rem; color: var(--teal-d); font-weight: 500; }
+
+    /* ── LIFECYCLE ────────────────────────────────── */
+    .lifecycle { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 32px; }
+    .lifecycle-step {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px; box-shadow: var(--card-shadow);
+      position: relative;
+    }
+    .lifecycle-step .step-num {
+      font-family: var(--mono); font-size: .72rem; color: var(--teal); font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .lifecycle-step h3 { color: var(--navy); font-size: .9rem; margin-bottom: 12px; }
+    .lifecycle-step ul li {
+      font-size: .82rem; color: var(--muted); margin-bottom: 6px;
+      padding-left: 14px; position: relative;
+    }
+    .lifecycle-step ul li::before { content: '→'; position: absolute; left: 0; color: var(--teal); font-size: .7rem; top: 1px; }
+    .contrib-tag {
+      display: inline-block; margin-top: 14px; padding: 3px 10px;
+      background: var(--teal-l); color: var(--teal-d);
+      border-radius: 100px; font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    }
+
+    /* ── COLLAB DIAGRAM ───────────────────────────── */
+    .collab {
+      display: flex; flex-direction: column; align-items: center; gap: 0; margin: 40px auto; max-width: 400px;
+    }
+    .collab-node {
+      width: 100%; text-align: center; padding: 14px 24px;
+      border-radius: 10px; font-weight: 600; font-size: .9rem;
+    }
+    .collab-node.primary { background: var(--navy); color: var(--white); }
+    .collab-node.kartik  { background: var(--teal); color: var(--white); font-size: 1rem; }
+    .collab-node.secondary { background: var(--off); color: var(--text); border: 1px solid var(--border); }
+    .collab-arrow { color: var(--teal); font-size: 1.3rem; padding: 4px; }
+
+    /* ── SKILL MATRIX ─────────────────────────────── */
+    .skill-table { width: 100%; border-collapse: collapse; margin-top: 32px; }
+    .skill-table th {
+      background: var(--navy); color: var(--white);
+      padding: 14px 18px; text-align: left; font-size: .78rem;
+      font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    }
+    .skill-table th:first-child { border-radius: 10px 0 0 0; }
+    .skill-table th:last-child  { border-radius: 0 10px 0 0; }
+    .skill-table td {
+      padding: 14px 18px; font-size: .875rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .skill-table tr:last-child td { border-bottom: none; }
+    .skill-table tr:nth-child(even) td { background: var(--off); }
+    .skill-name { font-weight: 600; color: var(--navy); }
+    .skill-evidence { color: var(--muted); }
+
+    /* ── LEARNINGS ────────────────────────────────── */
+    .learning-list { display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .learning-item {
+      display: flex; align-items: flex-start; gap: 16px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--card-shadow);
+    }
+    .learning-num {
+      min-width: 36px; height: 36px; background: var(--navy); color: var(--white);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: .82rem; font-weight: 800; flex-shrink: 0;
+    }
+    .learning-text h3 { font-size: .95rem; color: var(--navy); margin-bottom: 4px; }
+    .learning-text p { font-size: .855rem; color: var(--muted); }
+
+    /* ── PROPOSED IMPROVEMENTS ────────────────────── */
+    .proposal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 32px; }
+    .proposal-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--card-shadow);
+      position: relative; overflow: hidden;
+    }
+    .proposal-card::after {
+      content: 'PROPOSED'; position: absolute; top: 16px; right: 16px;
+      background: #fef3c7; color: #92400e; padding: 2px 8px;
+      border-radius: 100px; font-size: .65rem; font-weight: 700; letter-spacing: .06em;
+    }
+    .proposal-card h3 { color: var(--navy); font-size: .95rem; margin-bottom: 14px; padding-right: 80px; }
+    .proposal-row { margin-bottom: 8px; }
+    .proposal-row .p-label { font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--teal-d); margin-bottom: 2px; }
+    .proposal-row p { font-size: .83rem; color: var(--muted); }
+    .proposal-metric { margin-top: 14px; padding: 8px 12px; background: var(--teal-l); border-radius: 6px; font-size: .78rem; color: var(--teal-d); font-weight: 600; }
+
+    /* ── METRICS FRAMEWORK ────────────────────────── */
+    .metrics-framework { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 32px; }
+    .metric-group {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 22px; box-shadow: var(--card-shadow);
+    }
+    .metric-group .group-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--teal-d); margin-bottom: 14px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .metric-group li { font-size: .84rem; color: var(--muted); padding: 5px 0; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 8px; }
+    .metric-group li:last-child { border-bottom: none; }
+    .metric-group li::before { content: '•'; color: var(--teal); font-size: .8rem; }
+
+    /* ── PRODUCT ECOSYSTEM ────────────────────────── */
+    .ecosystem { display: flex; flex-direction: column; gap: 0; align-items: center; margin: 32px 0; max-width: 380px; }
+    .eco-step {
+      width: 100%; padding: 12px 20px; text-align: center; font-size: .88rem; font-weight: 600;
+    }
+    .eco-step.l1 { background: var(--navy); color: var(--white); border-radius: 8px 8px 0 0; }
+    .eco-step.l2 { background: #1a2d46; color: rgba(255,255,255,.85); }
+    .eco-step.l3 { background: #1e3457; color: rgba(255,255,255,.85); }
+    .eco-step.l4 { background: var(--teal); color: var(--white); }
+    .eco-step.l5 { background: #0369a1; color: var(--white); }
+    .eco-step.l6 { background: #075985; color: var(--white); border-radius: 0 0 8px 8px; }
+    .eco-arrow-d { text-align: center; color: var(--teal); font-size: 1rem; padding: 3px; width: 100%; }
+
+    /* ── IMPACT NOTE ──────────────────────────────── */
+    .impact-note { background: #fffbeb; border: 1px solid #fcd34d; border-radius: var(--radius); padding: 16px 20px; margin: 24px 0; }
+    .impact-note p { font-size: .82rem; color: #78350f; }
+
+    /* ── INSIGHT CARDS ────────────────────────────── */
+    .insight-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 28px; }
+    .insight-card {
+      background: var(--navy); color: var(--white);
+      border-radius: var(--radius); padding: 22px; position: relative;
+    }
+    .insight-card .ins-num { font-family: var(--mono); font-size: .72rem; color: var(--teal); margin-bottom: 10px; font-weight: 700; }
+    .insight-card p { color: rgba(255,255,255,.75); font-size: .875rem; line-height: 1.6; }
+
+    /* ── FINAL CALLOUT ────────────────────────────── */
+    .final-callout {
+      background: var(--navy); border-radius: var(--radius-lg);
+      padding: 56px 48px; text-align: center; position: relative; overflow: hidden;
+    }
+    .final-callout::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(14,165,233,.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .final-callout blockquote {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem); font-weight: 600;
+      color: var(--white); line-height: 1.6; max-width: 640px; margin: 0 auto 24px;
+      position: relative; z-index: 1;
+    }
+    .final-callout p {
+      color: rgba(255,255,255,.6); font-size: .95rem; max-width: 540px;
+      margin: 0 auto; line-height: 1.7; position: relative; z-index: 1;
+    }
+
+    /* ── DISCLAIMER ───────────────────────────────── */
+    .disclaimer {
+      background: #f8fafc; border-top: 1px solid var(--border);
+      padding: 32px 0; text-align: center;
+    }
+    .disclaimer p { font-size: .78rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+
+    /* ── UTILS ────────────────────────────────────── */
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: .75rem; font-weight: 600; }
+    .badge-blue { background: var(--teal-l); color: var(--teal-d); }
+    .divider { height: 1px; background: var(--border); margin: 48px 0; }
+    .text-teal { color: var(--teal); }
+    .text-navy { color: var(--navy); }
+    .mono { font-family: var(--mono); font-size: .85em; }
+    .mb-4 { margin-bottom: 4px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mt-24 { margin-top: 24px; }
+
+    /* ── EVIDENCE TAG ─────────────────────────────── */
+    .evidence-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      color: #166534; padding: 2px 10px; border-radius: 100px;
+      font-size: .7rem; font-weight: 600; letter-spacing: .04em;
+    }
+    .evidence-tag::before { content: '✓'; }
+
+    /* ── COLLAB SKILLS ────────────────────────────── */
+    .skills-tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .skills-tag {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 100px; padding: 6px 16px;
+      font-size: .8rem; font-weight: 500; color: var(--text);
+      box-shadow: var(--card-shadow);
+    }
+
+    /* ── RESPONSIVE ───────────────────────────────── */
+    @media (max-width: 640px) {
+      .container, .container--wide { padding: 0 20px; }
+      section { padding: 64px 0; }
+      .hero { padding: 72px 0 56px; }
+      .final-callout { padding: 40px 24px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ─────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">Kartik Mankar <span>/ PM Portfolio</span></a>
+    <div class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#users">Users</a>
+      <a href="#discovery">Discovery</a>
+      <a href="#my-role">My Role</a>
+      <a href="#impact">Impact</a>
+      <a href="#learnings">Learnings</a>
+    </div>
+    <a href="index.html" style="color:rgba(255,255,255,.55);font-size:.78rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;border:1px solid rgba(255,255,255,.15);padding:6px 14px;border-radius:8px;transition:all .2s;white-space:nowrap;">← Portfolio</a>
+  </div>
+</nav>
+<!-- ── PM FRAMEWORK BAR ────────────────────────────── -->
+<div style="background:rgba(13,27,46,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:8px 0;position:sticky;top:56px;z-index:998;">
+  <div style="max-width:960px;margin:0 auto;padding:0 32px;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;">
+    <a href="#summary"   class="fw-pill active">Summary</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#problem"   class="fw-pill">Problem</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#users"     class="fw-pill">Users</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#discovery" class="fw-pill">Discovery</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#product"   class="fw-pill">Product</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#my-role"   class="fw-pill">My Role</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#collab"    class="fw-pill">Collaboration</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#impact"    class="fw-pill">Impact</a>
+    <span style="color:rgba(255,255,255,.2);font-size:.65rem;">›</span>
+    <a href="#learnings" class="fw-pill">Learnings</a>
+  </div>
+</div>
+
+<!-- ── HERO ───────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-eyebrow">Flagship Case Study · Industrial Tech</div>
+    <h1>From Industrial Process<br />Pain Points to <span>Product Impact</span></h1>
+    <p class="hero-subtitle">How customer discovery, product implementation, and structured feedback loops helped improve industrial process optimization at scale.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">Role</span>
+        <span class="value">Product Analyst</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Company</span>
+        <span class="value">Haber Technologies</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Flagship Products</span>
+        <span class="value">Kaiznn · Mt. Fuji</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Domain</span>
+        <span class="value">Industrial AI Automation / Water &amp; Process Optimization</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">Period</span>
+        <span class="value">July 2022 – July 2025</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ── SECTION 1: EXECUTIVE SUMMARY ──────────────── -->
+<section id="summary">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">01 · Executive Summary</div>
+      <h2>What was the problem,<br />and what changed?</h2>
+      <p>Industrial plants rely on accurate monitoring and precise dosing of process chemicals. In practice, operators and process teams face a compounding challenge: manual monitoring creates blind spots, inconsistent data makes root-cause analysis unreliable, and process variability means that even well-designed interventions fail to land without proper adoption infrastructure.</p>
+    </div>
+
+    <p style="margin-bottom: 24px;"><strong>Haber Technologies</strong> builds products that automate monitoring and optimization of industrial processes — replacing manual, reactive workflows with real-time intelligence and automated dosing decisions. As a <strong>Product Analyst</strong> at Haber (July 2022 – July 2025), I owned the end-to-end product lifecycle for two flagship products — <strong>Kaiznn</strong> and <strong>Mt. Fuji</strong> — working across customer discovery, requirements definition (PRDs), roadmap prioritization, and ML model validation.</p>
+
+    <div class="callout">
+      <div class="callout-label">My Contribution</div>
+      <p>I led Voice-of-Customer research through 100+ on-site customer discovery interactions; synthesized pain points into structured PRDs that shaped the roadmap for two flagship features; partnered with data science on ML model validation for chemical dosing automation (improving accuracy by 8% and reducing chemical costs by 12–15%); shipped operational analytics dashboards tracking 15+ KPIs; and authored customer onboarding SOPs that reduced new site onboarding time by 30% across 5+ newly commissioned sites.</p>
+    </div>
+
+    <div class="section-tag" style="margin-top: 40px;">Project / Company Outcomes</div>
+    <div class="impact-note">
+      <p>Note: The metrics below represent outcomes reported at the project and company level. Individual attribution to any single contributor is not claimed. Where measurement methodology is not available, this is stated explicitly.</p>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">15–20<span>%</span></div>
+        <div class="metric-label">Chemical Reduction</div>
+        <div class="metric-note">Reduction in chemical consumption through automated dosing. Reported project outcome; measurement methodology not disclosed.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">8<span>%</span></div>
+        <div class="metric-label">Dosing Accuracy Improvement</div>
+        <div class="metric-note">Improvement in dosing precision relative to pre-deployment baseline. Reported project outcome.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">12–15<span>%</span></div>
+        <div class="metric-label">Chemical Cost Reduction</div>
+        <div class="metric-note">Direct cost savings from optimized chemical usage. Reported project outcome.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">30<span>%</span></div>
+        <div class="metric-label">Onboarding Time Reduction</div>
+        <div class="metric-note">Reduction in time-to-live for new plant deployments. Contributed to by streamlined implementation processes.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">~20<span>%</span></div>
+        <div class="metric-label">Reduction in Data Errors</div>
+        <div class="metric-note">Decrease in data quality issues identified post-deployment. Contributed to by improved sensor configuration and validation workflows.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 2: THE PROBLEM ─────────────────────── -->
+<section id="problem">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">02 · The Problem</div>
+      <h2>Industrial optimization is not just a data problem.<br />It's an adoption problem.</h2>
+      <p>Industrial process optimization sits at the intersection of operations, data, and human behavior. Each of these introduces its own category of friction.</p>
+    </div>
+
+    <h4 style="margin-bottom: 16px;">Where friction occurs in the standard workflow</h4>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-node">Plant Operations</div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node friction">Sensors / Manual Data</div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node friction">Process Monitoring</div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node friction">Decision-Making</div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node">Chemical Dosing</div>
+        <div class="flow-arrow">→</div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-node active">Operational Outcome</div>
+      </div>
+    </div>
+    <div style="margin-bottom: 24px;">
+      <span style="display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:#ef4444;font-weight:600;"><span style="width:12px;height:12px;background:#ef4444;border-radius:3px;display:inline-block;"></span> Friction points</span>
+      <span style="display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--teal);font-weight:600;margin-left:20px;"><span style="width:12px;height:12px;background:var(--teal);border-radius:3px;display:inline-block;"></span> Automation-enabled stage</span>
+    </div>
+
+    <div class="stakeholder-grid" style="margin-top: 32px;">
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Operational</div>
+        <h3>Multiple Process Parameters</h3>
+        <p style="font-size:.84rem;">Plants track pH, turbidity, flow rate, conductivity, and more simultaneously. Manual tracking across these dimensions is cognitively demanding and error-prone.</p>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Data</div>
+        <h3>Inconsistent Operational Data</h3>
+        <p style="font-size:.84rem;">Sensor drift, maintenance gaps, and manual entry errors compound to produce unreliable data that makes trend analysis and root-cause investigation difficult.</p>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Human</div>
+        <h3>Operator Dependency</h3>
+        <p style="font-size:.84rem;">Process decisions rely heavily on individual operator experience. Knowledge is not systematically captured, making outcomes inconsistent across shifts and sites.</p>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Adoption</div>
+        <h3>Long Onboarding Cycles</h3>
+        <p style="font-size:.84rem;">Each plant has a unique configuration. Without a structured onboarding framework, time-to-value was extended and implementation quality varied significantly site by site.</p>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Translation</div>
+        <h3>Data Without Decisions</h3>
+        <p style="font-size:.84rem;">Process data was often available, but difficult to convert into specific, actionable recommendations. Operators knew something was wrong — not always what to do about it.</p>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Feedback</div>
+        <h3>Weak Customer–Product Loop</h3>
+        <p style="font-size:.84rem;">Operational feedback from plants rarely made it to product teams in a structured form. Problems were addressed reactively, rather than systematically incorporated into the product roadmap.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 3: USERS & STAKEHOLDERS ───────────── -->
+<section id="users">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">03 · Users &amp; Stakeholders</div>
+      <h2>Who uses the product —<br />and who it ultimately serves</h2>
+      <p>Industrial B2B products have layered stakeholders. The person who operates the product is rarely the person who procures it. Understanding this separation is fundamental to effective product work in this space.</p>
+    </div>
+
+    <h4 style="margin-bottom: 20px; color: var(--teal-d);">Primary Users</h4>
+    <div class="stakeholder-grid">
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Primary User</div>
+        <h3>Plant Operator</h3>
+        <div class="stakeholder-row">
+          <div class="row-label">Goal</div>
+          <p>Reliable, easy day-to-day process operation without ambiguity or overload.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Pain Point</div>
+          <p>Excessive manual monitoring across multiple parameters; difficulty acting on incomplete or inconsistent data.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Success Looks Like</div>
+          <p>Clear, actionable recommendations. Fewer process surprises. Confidence in the system's output.</p>
+        </div>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Primary User</div>
+        <h3>Process Engineer</h3>
+        <div class="stakeholder-row">
+          <div class="row-label">Goal</div>
+          <p>Process stability, deviation detection, and systematic optimization.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Pain Point</div>
+          <p>Difficulty identifying deviations early. Limited visibility into historical trends. Knowledge not captured systematically.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Success Looks Like</div>
+          <p>Better diagnostic visibility, faster deviation response, and continuous process improvement over time.</p>
+        </div>
+      </div>
+      <div class="stakeholder-card">
+        <div class="stakeholder-badge badge-primary">Primary User</div>
+        <h3>Site Head</h3>
+        <div class="stakeholder-row">
+          <div class="row-label">Goal</div>
+          <p>Cost reduction, operational efficiency, and reliable KPI reporting to leadership.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Pain Point</div>
+          <p>Lack of consolidated, plant-level visibility. Dependent on operator and engineer reports that may lag or be inconsistent.</p>
+        </div>
+        <div class="stakeholder-row">
+          <div class="row-label">Success Looks Like</div>
+          <p>Measurable, reportable plant-level improvement. Reduced chemical costs. Reduced operational variability.</p>
+        </div>
+      </div>
+    </div>
+
+    <h4 style="margin-top: 40px; margin-bottom: 20px; color: var(--muted);">Secondary Stakeholders</h4>
+    <div class="stakeholder-grid">
+      <div class="stakeholder-card secondary">
+        <div class="stakeholder-badge badge-secondary">Secondary</div>
+        <h3>Plant Owner / Management</h3>
+        <p style="font-size:.84rem;">Ultimately accountable for capital and operational costs. Needs confidence that technology investment produces a measurable return. Rarely interacts with the product directly.</p>
+      </div>
+      <div class="stakeholder-card secondary">
+        <div class="stakeholder-badge badge-secondary">Secondary</div>
+        <h3>Purchase / Procurement</h3>
+        <p style="font-size:.84rem;">Evaluates vendor credentials, contract terms, and total cost of ownership. Influences initial purchase decisions but is not involved in daily product use.</p>
+      </div>
+      <div class="stakeholder-card secondary">
+        <div class="stakeholder-badge badge-secondary">Secondary</div>
+        <h3>Customer Success / Implementation</h3>
+        <p style="font-size:.84rem;">Responsible for deployment quality and time-to-value. Carries the operational risk of failed implementations. A key source of structured customer feedback.</p>
+      </div>
+      <div class="stakeholder-card secondary">
+        <div class="stakeholder-badge badge-secondary">Secondary</div>
+        <h3>Product &amp; Engineering Teams</h3>
+        <p style="font-size:.84rem;">Build and iterate on the product. Dependent on accurate, structured customer input to prioritize improvements correctly. Often separated from the plant floor by multiple layers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 4: CUSTOMER DISCOVERY ─────────────── -->
+<section id="discovery">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">04 · Customer Discovery</div>
+      <h2>Understanding the problem<br />from the plant floor</h2>
+      <p>Customer discovery in industrial B2B is not a workshop exercise — it happens in real operations environments, under real constraints. My discovery work was embedded in the implementation process itself.</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:36px;flex-wrap:wrap;">
+      <div style="background:var(--navy);color:var(--white);border-radius:var(--radius);padding:24px 32px;text-align:center;min-width:160px;">
+        <div style="font-size:2.4rem;font-weight:800;line-height:1;color:var(--teal);">100+</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.6);margin-top:6px;font-weight:500;">Customer interactions across implementations, deployments, troubleshooting, and feedback sessions</div>
+      </div>
+      <p style="flex:1;min-width:240px;font-size:.9rem;">These interactions spanned plant operators, process engineers, and site heads — across different industrial configurations, geographies, and operational maturity levels. Each interaction surfaced patterns that shaped how the product was implemented, configured, and improved.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;flex-wrap:wrap;" class="discovery-layout">
+      <div>
+        <h4 style="margin-bottom:16px;">My Discovery Process</h4>
+        <div class="funnel">
+          <div class="funnel-step"><div class="funnel-num">1</div><span>Customer / site interaction</span></div>
+          <div class="funnel-step"><div class="funnel-num">2</div><span>Observe operational workflow</span></div>
+          <div class="funnel-step"><div class="funnel-num">3</div><span>Identify friction &amp; pain points</span></div>
+          <div class="funnel-step"><div class="funnel-num">4</div><span>Document as structured requirement</span></div>
+          <div class="funnel-step"><div class="funnel-num">5</div><span>Translate into product feedback</span></div>
+          <div class="funnel-step"><div class="funnel-num">6</div><span>Coordinate with product / engineering</span></div>
+          <div class="funnel-step"><div class="funnel-num">7</div><span>Deploy / validate improvement</span></div>
+          <div class="funnel-step"><div class="funnel-num">8</div><span>Collect next-round feedback</span></div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:16px;">What I Learned</h4>
+        <div class="insight-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="insight-card">
+            <div class="ins-num">INSIGHT 01</div>
+            <p>Customers don't buy dashboards — they buy operational outcomes. The product had to answer: "What should I do right now?"</p>
+          </div>
+          <div class="insight-card">
+            <div class="ins-num">INSIGHT 02</div>
+            <p>A technically correct product can still fail if the workflow around it is difficult. Usability and operability are product requirements.</p>
+          </div>
+          <div class="insight-card">
+            <div class="ins-num">INSIGHT 03</div>
+            <p>Post-deployment feedback is often more specific than pre-implementation research. Real-world use reveals edge cases that no discovery workshop captures.</p>
+          </div>
+          <div class="insight-card">
+            <div class="ins-num">INSIGHT 04</div>
+            <p>Product adoption in industrial settings depends heavily on onboarding quality and early trust-building, not just feature completeness.</p>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:.75rem;color:var(--muted);font-style:italic;">Insights derived from observed patterns across multiple implementation engagements, not stated as universal principles.</div>
+      </div>
+    </div>
+
+    <style>
+      @media (max-width: 640px) {
+        .discovery-layout { grid-template-columns: 1fr !important; }
+      }
+    </style>
+  </div>
+</section>
+
+<!-- ── SECTION 5: PAIN POINTS ─────────────────────── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">05 · Customer Pain Points</div>
+      <h2>Observed friction points,<br />structured as product problems</h2>
+      <p>The following pain points emerged consistently across implementation engagements. They are documented as operational observations, not inferred hypotheses.</p>
+    </div>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">01</div>Manual Process Monitoring</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Operators manually log process parameters across shifts using physical logs or basic spreadsheets, often with long intervals between checks.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>Slow detection of deviations. High operator cognitive load. Inconsistent data quality across shifts and sites.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → Automated real-time monitoring with exception-based alerting, reducing manual observation burden.</div>
+      </div>
+
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">02</div>Data Quality Issues</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Sensor drift, calibration gaps, and manual data entry errors produce data that is inconsistent or unreliable, especially over longer time windows.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>Repeated implementation feedback indicated that poor data quality was a root cause of incorrect dosing decisions and eroded operator trust in the system.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → In-system data validation, anomaly flagging, and calibration alerts to improve data reliability at the source.</div>
+      </div>
+
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">03</div>Long Onboarding &amp; Setup</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Each plant deployment was handled largely on a site-by-site basis, with significant variation in setup time, configuration approach, and documentation quality.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>Extended time-to-value. Inconsistent implementation quality. Pressure on implementation resources across concurrent deployments.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → Standardized onboarding templates and configuration workflows to accelerate time-to-live.</div>
+      </div>
+
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">04</div>Interpreting Process Data</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Process data was available but presented in ways that required engineering expertise to interpret, limiting its usefulness for frontline operators.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>Data without decision support creates friction. Operators who couldn't interpret data defaulted to manual interventions, reducing automation benefit.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → Contextual recommendations layered over raw data — "what to do" rather than "what is happening."</div>
+      </div>
+
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">05</div>Process Variability Across Sites</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Each plant has unique configurations, inlet water quality, and process parameters. Solutions designed for one site did not transfer cleanly to another.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>High variability in implementation effort and post-deployment performance. Product configurations required extensive customization per site.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → Configurable templates and site-specific parameter tuning to balance scalability with local adaptation.</div>
+      </div>
+
+      <div class="pain-card">
+        <div class="pain-title"><div class="pain-icon" style="font-size:0.85rem;font-weight:700;">06</div>Customer–Product Feedback Gap</div>
+        <div class="pain-row">
+          <div class="pain-label">Current Workflow</div>
+          <p>Operational feedback from the field was often shared informally and did not consistently reach product teams in a structured or prioritized form.</p>
+        </div>
+        <div class="pain-row">
+          <div class="pain-label">Impact</div>
+          <p>Recurring issues remained unresolved across multiple deployments. High-impact improvements were missed because the signal wasn't reaching the roadmap.</p>
+        </div>
+        <div class="pain-opportunity">Product Opportunity → A structured implementation feedback loop with categorized issue tracking and escalation to product teams.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 6: THE PRODUCT ─────────────────────── -->
+<section id="product">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">06 · The Product</div>
+      <h2>Haber's Industrial<br />Optimization Platform</h2>
+      <p>Haber builds technology that replaces manual, reactive industrial process management with automated, data-driven optimization. The products (including Kaiznn and Mt. Fuji) are designed for water treatment, industrial process monitoring, and chemical dosing optimization.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;" class="product-layout">
+      <div>
+        <h4 style="margin-bottom:20px;">Product Ecosystem</h4>
+        <div class="ecosystem">
+          <div class="eco-step l1">Industrial Process / Plant Operations</div>
+          <div class="eco-arrow-d">↓</div>
+          <div class="eco-step l2">Sensor Data Collection &amp; Ingestion</div>
+          <div class="eco-arrow-d">↓</div>
+          <div class="eco-step l3">Process Monitoring &amp; Data Analysis</div>
+          <div class="eco-arrow-d">↓</div>
+          <div class="eco-step l4">Product Intelligence (Kaiznn / Mt. Fuji)</div>
+          <div class="eco-arrow-d">↓</div>
+          <div class="eco-step l5">Recommended / Automated Dosing Action</div>
+          <div class="eco-arrow-d">↓</div>
+          <div class="eco-step l6">Measurable Operational Outcome</div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:20px;">What the Product Solves</h4>
+        <div class="vflow">
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>Who uses it</h4>
+              <p>Plant operators, process engineers, and site heads at industrial facilities — primarily water treatment, manufacturing, and process industries.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>What it does</h4>
+              <p>Automates process monitoring, flags deviations, and provides optimized dosing recommendations — reducing manual intervention and chemical waste.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>Where it fits</h4>
+              <p>Embedded in the plant's operational workflow — integrating with sensors, control systems, and operator dashboards to make automation contextually useful.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div></div>
+            <div class="vflow-content">
+              <h4>Why automation matters</h4>
+              <p>Manual chemical dosing is imprecise, costly, and operator-dependent. Automated optimization consistently outperforms manual intervention at scale.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:.75rem;color:var(--muted);font-style:italic;padding:12px;background:var(--off);border-radius:8px;border:1px solid var(--border);">
+          Product details are presented at a high level to respect proprietary and confidential information.
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @media (max-width: 640px) {
+        .product-layout { grid-template-columns: 1fr !important; }
+      }
+    </style>
+  </div>
+</section>
+
+<!-- ── SECTION 7: MY ROLE ─────────────────────────── -->
+<section id="my-role">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">07 · My Role</div>
+      <h2>How I contributed across<br />the product lifecycle</h2>
+      <p>My involvement was not limited to a single phase. I engaged across discovery, implementation, deployment, and iteration — creating direct visibility into the full product experience from the customer's perspective.</p>
+    </div>
+
+    <div class="lifecycle">
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 01</div>
+        <h3>Discovery</h3>
+        <ul>
+          <li>Conducted on-site customer interactions across plants</li>
+          <li>Observed operational workflows directly at the plant floor</li>
+          <li>Mapped and identified friction points in current processes</li>
+        </ul>
+        <span class="contrib-tag">Directly performed</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 02</div>
+        <h3>Requirements</h3>
+        <ul>
+          <li>Translated customer pain points into structured product requirements</li>
+          <li>Documented site-specific configurations and constraints</li>
+          <li>Communicated requirements to product and engineering teams</li>
+        </ul>
+        <span class="contrib-tag">Directly performed</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 03</div>
+        <h3>Prioritization</h3>
+        <ul>
+          <li>Surfaced recurring, high-impact implementation issues</li>
+          <li>Helped distinguish between site-specific edge cases and systemic product gaps</li>
+          <li>Supported internal teams in understanding customer impact severity</li>
+        </ul>
+        <span class="contrib-tag">Supported</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 04</div>
+        <h3>Development</h3>
+        <ul>
+          <li>Coordinated with product and engineering teams on implementation requirements</li>
+          <li>Clarified edge-case behavior from field experience</li>
+          <li>Validated expected product behavior against real operational context</li>
+        </ul>
+        <span class="contrib-tag">Supported &amp; coordinated</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 05</div>
+        <h3>Implementation</h3>
+        <ul>
+          <li>Led on-site product installation and configuration</li>
+          <li>Resolved implementation issues in real time</li>
+          <li>Adapted deployment to site-specific constraints</li>
+        </ul>
+        <span class="contrib-tag">Directly performed</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 06</div>
+        <h3>Deployment</h3>
+        <ul>
+          <li>Worked with plant teams to validate product performance post-deployment</li>
+          <li>Supported operator onboarding and early adoption</li>
+          <li>Identified gaps between expected and actual product behavior</li>
+        </ul>
+        <span class="contrib-tag">Directly performed</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 07</div>
+        <h3>Feedback</h3>
+        <ul>
+          <li>Captured structured customer feedback across engagements</li>
+          <li>Identified recurring issues and improvement patterns</li>
+          <li>Fed insights back into product teams as actionable input</li>
+        </ul>
+        <span class="contrib-tag">Directly performed</span>
+      </div>
+      <div class="lifecycle-step">
+        <div class="step-num">STAGE 08</div>
+        <h3>Iteration</h3>
+        <ul>
+          <li>Closed the loop between deployment outcomes and product improvements</li>
+          <li>Re-validated changes in subsequent deployments</li>
+          <li>Contributed to reduction in onboarding time and data error rate</li>
+        </ul>
+        <span class="contrib-tag">Contributed to</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 8: CROSS-FUNCTIONAL ───────────────── -->
+<section id="collab">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">08 · Cross-Functional Collaboration</div>
+      <h2>Acting as the bridge between<br />the plant floor and the product team</h2>
+      <p>In industrial B2B, the people who use the product are rarely the people who can articulate product requirements in engineering terms. My role sat at that translation layer.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;" class="collab-layout">
+      <div>
+        <h4 style="margin-bottom:20px;">Collaboration Structure</h4>
+        <div class="collab">
+          <div class="collab-node primary">Customer (Plant Operators, Engineers, Site Heads)</div>
+          <div class="collab-arrow">↕</div>
+          <div class="collab-node kartik">Kartik — Translation &amp; Communication Layer</div>
+          <div class="collab-arrow">↕</div>
+          <div class="collab-node secondary">Product Team</div>
+          <div class="collab-arrow">↕</div>
+          <div class="collab-node secondary">Engineering Team</div>
+          <div class="collab-arrow">↕</div>
+          <div class="collab-node secondary">Customer Success / Implementation</div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:20px;">Skills Demonstrated — with Evidence</h4>
+        <div class="vflow">
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>Customer Empathy</h4>
+              <p>Identified that operators were not failing to use the product — they were failing to trust it. Led to recommendations around data validation transparency.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>Technical Communication</h4>
+              <p>Translated site-specific sensor and configuration constraints into language that product and engineering teams could act on without direct plant exposure.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div><div class="vflow-line"></div></div>
+            <div class="vflow-content">
+              <h4>Stakeholder Management</h4>
+              <p>Worked simultaneously with plant operators (usability), process engineers (accuracy), site heads (outcomes), and internal teams (product requirements) — balancing competing priorities.</p>
+            </div>
+          </div>
+          <div class="vflow-item">
+            <div class="vflow-connector"><div class="vflow-dot"></div></div>
+            <div class="vflow-content">
+              <h4>Product Thinking</h4>
+              <p>Consistently reframed operational issues as product gaps — not just support tickets — and advocated for systemic fixes over repeated one-off interventions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skills-tag-row" style="margin-top:36px;">
+      <div class="skills-tag">Customer Discovery</div>
+      <div class="skills-tag">Requirement Gathering</div>
+      <div class="skills-tag">Stakeholder Management</div>
+      <div class="skills-tag">Technical Communication</div>
+      <div class="skills-tag">Product Thinking</div>
+      <div class="skills-tag">Problem Solving</div>
+      <div class="skills-tag">Cross-functional Collaboration</div>
+      <div class="skills-tag">Implementation Expertise</div>
+    </div>
+
+    <style>
+      @media (max-width: 640px) {
+        .collab-layout { grid-template-columns: 1fr !important; }
+      }
+    </style>
+  </div>
+</section>
+
+<!-- ── SECTION 9: IMPACT ──────────────────────────── -->
+<section id="impact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">09 · Product Impact</div>
+      <h2>Measurable outcomes<br />from implementation and optimization</h2>
+      <p>The following outcomes were achieved at the project and company level. Where attribution is complex, this is stated explicitly.</p>
+    </div>
+
+    <div class="impact-note">
+      <p>Transparency note: These metrics represent outcomes reported across the implementation program. Exact measurement methodologies are not fully disclosed. Individual attribution to any single contributor is not implied. I contributed to these outcomes through implementation improvements, structured feedback, and coordination with product and engineering teams.</p>
+    </div>
+
+    <div class="metrics-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+      <div class="metric-card">
+        <div class="metric-value">15–20<span>%</span></div>
+        <div class="metric-label">Chemical Reduction</div>
+        <div class="metric-note"><strong>What was measured:</strong> Volume of process chemicals consumed post-deployment vs. baseline.<br /><strong>Why it matters:</strong> Direct reduction in input cost and environmental load.<br /><strong>Contributing factor:</strong> Automated dosing optimization replacing manual estimation. <em>Reported outcome; measurement methodology not disclosed.</em></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">8<span>%</span></div>
+        <div class="metric-label">Dosing Accuracy Improvement</div>
+        <div class="metric-note"><strong>What was measured:</strong> Variance in dosing relative to process requirements.<br /><strong>Why it matters:</strong> Precision dosing prevents both under- and over-treatment.<br /><strong>Contributing factor:</strong> Product intelligence replacing manual operator judgment. <em>Reported outcome; measurement methodology not disclosed.</em></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">12–15<span>%</span></div>
+        <div class="metric-label">Chemical Cost Reduction</div>
+        <div class="metric-note"><strong>What was measured:</strong> Operational chemical procurement cost post-deployment.<br /><strong>Why it matters:</strong> Directly measurable ROI metric for plant owners and site heads.<br /><strong>Contributing factor:</strong> Reduced waste through precision dosing. <em>Reported outcome; measurement methodology not disclosed.</em></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">30<span>%</span></div>
+        <div class="metric-label">Onboarding Time Reduction</div>
+        <div class="metric-note"><strong>What was measured:</strong> Time from initial site engagement to full deployment.<br /><strong>Why it matters:</strong> Faster time-to-value improves customer experience and implementation team capacity.<br /><strong>Contributing factor:</strong> Streamlined implementation workflows and standardized configuration. I directly contributed to this through process improvements.</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">~20<span>%</span></div>
+        <div class="metric-label">Reduction in Data Errors</div>
+        <div class="metric-note"><strong>What was measured:</strong> Data quality issues identified post-deployment vs. earlier implementation cycles.<br /><strong>Why it matters:</strong> Data quality is a prerequisite for reliable automation.<br /><strong>Contributing factor:</strong> Improved sensor validation and configuration workflows. I directly contributed to this through structured feedback on data quality issues.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 10: LEARNINGS ─────────────────────── -->
+<section id="learnings">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">10 · PM Learnings</div>
+      <h2>What this experience taught me<br />about Product Management</h2>
+    </div>
+
+    <div class="learning-list">
+      <div class="learning-item">
+        <div class="learning-num">1</div>
+        <div class="learning-text">
+          <h3>Start with the workflow, not the feature.</h3>
+          <p>In industrial settings, a feature that doesn't fit the operator's shift rhythm doesn't get used — regardless of its technical quality. Understanding the existing workflow before proposing a solution is not optional. It is the foundation of effective product thinking in this domain.</p>
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">2</div>
+        <div class="learning-text">
+          <h3>Customer discovery continues after launch.</h3>
+          <p>The most specific and actionable product insights emerge from real usage, not from pre-deployment interviews. Structured post-deployment observation reveals use cases, failure modes, and unmet needs that no research framework anticipates in advance.</p>
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">3</div>
+        <div class="learning-text">
+          <h3>Implementation is part of the product experience.</h3>
+          <p>How a product is deployed shapes how it is perceived and adopted. A difficult onboarding process creates doubt about the product itself. Treating implementation quality as a product requirement — not just an operational concern — materially affects adoption outcomes.</p>
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">4</div>
+        <div class="learning-text">
+          <h3>Data is useful only when it drives action.</h3>
+          <p>Industrial operators are surrounded by data. The product's job is not to show more data — it is to surface the decision that needs to be made right now. Displaying information and enabling action are two different product outcomes. Building for the latter is significantly harder.</p>
+        </div>
+      </div>
+      <div class="learning-item">
+        <div class="learning-num">5</div>
+        <div class="learning-text">
+          <h3>The best product decisions happen at the intersection of customer pain, technical feasibility, and business impact.</h3>
+          <p>In B2B industrial tech, it's easy to optimize for what's technically elegant, or what the customer loudly requests, or what has the most commercial upside — in isolation. The highest-value decisions consistently emerge when all three signals align. Learning to read that intersection is a core PM skill.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 11: WHAT I WOULD DO NEXT ──────────── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">11 · If I Were the PM</div>
+      <h2>Proposed improvements based<br />on observed operational gaps</h2>
+      <p>The following are my proposed product improvements — derived from direct implementation experience. These are <strong>not existing product capabilities</strong>. They represent where I believe the product could evolve based on observed customer pain.</p>
+    </div>
+
+    <div class="proposal-grid">
+      <div class="proposal-card">
+        <h3>Guided Onboarding Framework</h3>
+        <div class="proposal-row">
+          <div class="p-label">Problem</div>
+          <p>Each site deployment required significant manual effort with high variability in quality and time.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Hypothesis</div>
+          <p>A structured, in-product onboarding checklist with site-type templates would reduce setup variability and time.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Proposed Solution</div>
+          <p>Template-based onboarding flows with pre-configured parameter defaults by plant type, validation checkpoints, and documentation generation.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Expected Impact</div>
+          <p>Further reduction in onboarding time; more consistent deployment quality across sites.</p>
+        </div>
+        <div class="proposal-metric">Success Metric → Time-to-live per site; implementation CSAT</div>
+      </div>
+
+      <div class="proposal-card">
+        <h3>Automated Anomaly Detection &amp; Alerting</h3>
+        <div class="proposal-row">
+          <div class="p-label">Problem</div>
+          <p>Process deviations were often identified only after the fact, when operators noticed the outcome rather than the cause.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Hypothesis</div>
+          <p>Real-time anomaly detection with contextual alerts (not just threshold breaches) would enable earlier intervention.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Proposed Solution</div>
+          <p>ML-based deviation detection surfacing operator-readable alerts with recommended action — not just raw sensor values.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Expected Impact</div>
+          <p>Faster deviation response; reduced downstream chemical waste from undetected process drift.</p>
+        </div>
+        <div class="proposal-metric">Success Metric → Mean time to detect deviation; alert action rate</div>
+      </div>
+
+      <div class="proposal-card">
+        <h3>Customer Health &amp; Adoption Dashboard</h3>
+        <div class="proposal-row">
+          <div class="p-label">Problem</div>
+          <p>Internal teams had limited visibility into whether customers were actively using the product and deriving value from it.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Hypothesis</div>
+          <p>A usage and adoption dashboard for customer success and product teams would enable proactive intervention before churn or disengagement.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Proposed Solution</div>
+          <p>Internal product health dashboard tracking active usage, recommendation acceptance rate, alert resolution, and data quality by site.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Expected Impact</div>
+          <p>Earlier detection of at-risk customers; ability to prioritize implementation support where it's most needed.</p>
+        </div>
+        <div class="proposal-metric">Success Metric → Feature adoption rate; recommendation acceptance rate per site</div>
+      </div>
+
+      <div class="proposal-card">
+        <h3>Process Performance Benchmarking</h3>
+        <div class="proposal-row">
+          <div class="p-label">Problem</div>
+          <p>Site heads had no external reference point for whether their process performance was good, average, or below par.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Hypothesis</div>
+          <p>Anonymized cross-site benchmarking would increase engagement from site heads and create internal motivation for optimization.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Proposed Solution</div>
+          <p>Opt-in benchmarking module showing how a site's key metrics compare to similar plant configurations (anonymized, aggregated).</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Expected Impact</div>
+          <p>Increased site head engagement; stronger business case for product expansion across plants.</p>
+        </div>
+        <div class="proposal-metric">Success Metric → Site head login frequency; expansion conversations initiated</div>
+      </div>
+
+      <div class="proposal-card">
+        <h3>Structured Implementation Feedback Loop</h3>
+        <div class="proposal-row">
+          <div class="p-label">Problem</div>
+          <p>Field feedback was captured informally and inconsistently, limiting its ability to systematically improve the product.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Hypothesis</div>
+          <p>A formalized, categorized feedback intake process tied to deployment milestones would surface high-impact issues faster.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Proposed Solution</div>
+          <p>Structured post-deployment review checklist with categorized issue tagging, severity scoring, and direct routing to product backlog.</p>
+        </div>
+        <div class="proposal-row">
+          <div class="p-label">Expected Impact</div>
+          <p>Higher quality product input from field; reduction in repeat issues across deployments.</p>
+        </div>
+        <div class="proposal-metric">Success Metric → % of field issues reaching product backlog; repeat-issue rate</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 12: SUCCESS METRICS ───────────────── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">12 · Metrics Framework</div>
+      <h2>How I would measure<br />product success</h2>
+      <p>A metrics framework for an industrial process optimization product needs to connect operational outcomes to product health to business results. North star: <strong>Operational efficiency and measurable process optimization across deployed sites.</strong></p>
+    </div>
+
+    <div class="metrics-framework">
+      <div class="metric-group">
+        <div class="group-title">North Star</div>
+        <ul>
+          <li>Measurable chemical savings per site</li>
+          <li>Operational efficiency improvement vs. baseline</li>
+        </ul>
+      </div>
+      <div class="metric-group">
+        <div class="group-title">Adoption</div>
+        <ul>
+          <li>Active users per site (weekly)</li>
+          <li>Feature adoption rate</li>
+          <li>Recommendation acceptance rate</li>
+          <li>Frequency of dashboard engagement</li>
+        </ul>
+      </div>
+      <div class="metric-group">
+        <div class="group-title">Product</div>
+        <ul>
+          <li>Alert resolution rate</li>
+          <li>Data quality score per site</li>
+          <li>Mean time to detect deviation</li>
+          <li>False alert rate</li>
+        </ul>
+      </div>
+      <div class="metric-group">
+        <div class="group-title">Customer</div>
+        <ul>
+          <li>Time to onboard (days)</li>
+          <li>Time to first measurable value</li>
+          <li>Implementation CSAT</li>
+          <li>Support ticket volume and resolution time</li>
+        </ul>
+      </div>
+      <div class="metric-group">
+        <div class="group-title">Business</div>
+        <ul>
+          <li>Chemical cost savings (\$ per site)</li>
+          <li>Net Promoter Score</li>
+          <li>Customer retention rate</li>
+          <li>Plant expansion rate</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SECTION 13: SKILLS MATRIX ─────────────────── -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">13 · PM Skills Demonstrated</div>
+      <h2>Skills, connected to evidence</h2>
+      <p>Each skill listed below is tied to a concrete activity from this engagement — not claimed in isolation.</p>
+    </div>
+
+    <table class="skill-table">
+      <thead>
+        <tr>
+          <th>PM Skill</th>
+          <th>Evidence from Engagement</th>
+          <th>Activity Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="skill-name">Customer Discovery</td>
+          <td class="skill-evidence">100+ customer interactions across plant operators, process engineers, and site heads during implementations, deployments, and feedback cycles</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Requirement Gathering</td>
+          <td class="skill-evidence">Translated operational pain points observed on the plant floor into structured product requirements communicated to internal teams</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Product Implementation</td>
+          <td class="skill-evidence">On-site product installation, configuration, troubleshooting, and go-live support across multiple industrial plant deployments</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Cross-functional Collaboration</td>
+          <td class="skill-evidence">Coordinated between customer teams, product management, and engineering to translate field observations into actionable product input</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Data-driven Thinking</td>
+          <td class="skill-evidence">Tracked operational outcomes across deployments; identified patterns in data quality issues that informed product improvement priorities</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Problem Solving</td>
+          <td class="skill-evidence">Resolved implementation and configuration issues in real time during on-site deployments; escalated systemic issues through structured feedback</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Product Analytics</td>
+          <td class="skill-evidence">Connected deployment process changes (onboarding standardization, data validation) to measurable reductions in onboarding time and data error rates</td>
+          <td><span class="evidence-tag">Contributed</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Stakeholder Management</td>
+          <td class="skill-evidence">Balanced competing stakeholder priorities — operator usability, engineer accuracy requirements, site head cost outcomes — across every deployment</td>
+          <td><span class="evidence-tag">Direct</span></td>
+        </tr>
+        <tr>
+          <td class="skill-name">Prioritization</td>
+          <td class="skill-evidence">Helped distinguish high-impact systemic product gaps from site-specific edge cases; advocated for improvements with the greatest cross-site benefit</td>
+          <td><span class="evidence-tag">Supported</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── SECTION 14: FINAL TAKEAWAY ────────────────── -->
+<section id="final" style="background:var(--off);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">14 · Final Takeaway</div>
+      <h2>What I carry forward</h2>
+    </div>
+    <div class="final-callout">
+      <blockquote>"Working at the intersection of customers, technology, and industrial operations taught me that product management is ultimately about turning messy real-world problems into simple, measurable outcomes."</blockquote>
+      <p>This experience shaped how I approach product: understand the user deeply, define the problem clearly, build with technical teams, measure outcomes, and keep iterating. Industrial environments are unforgiving — they surface the difference between a product that works in a demo and one that works at 6 a.m. during a night shift. That distinction has made me a better product thinker.</p>
+    </div>
+
+    <div style="margin-top:56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Education</div>
+        <div style="font-weight:600;color:var(--navy);font-size:.95rem;">MBA in Data Science &amp; AI</div>
+        <div style="font-size:.83rem;color:var(--muted);">IIT Mandi</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Experience</div>
+        <div style="font-weight:600;color:var(--navy);font-size:.95rem;">Product Analyst</div>
+        <div style="font-size:.83rem;color:var(--muted);">Haber Technologies (July '22 – July '25)</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Domain Focus</div>
+        <div style="font-weight:600;color:var(--navy);font-size:.95rem;">Industrial Automation</div>
+        <div style="font-size:.83rem;color:var(--muted);">Water &amp; Process Optimization · B2B SaaS</div>
+      </div>
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px;">
+        <div style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Pursuing</div>
+        <div style="font-weight:600;color:var(--navy);font-size:.95rem;">Product Management</div>
+        <div style="font-size:.83rem;color:var(--muted);">B2B · Consumer · Industrial Tech</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CASE STUDY NAVIGATION ─────────────────────── -->
+<div style="background:var(--navy);padding:40px 0;border-top:1px solid rgba(255,255,255,0.08);text-align:center;">
+  <div class="container">
+    <div style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;">Explore Next Case Study</div>
+    <h3 style="color:#fff;font-size:1.4rem;margin-bottom:24px;">Case Study 02 — Credit Risk Command Center</h3>
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;">
+      <a href="case-study-credit-risk.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:10px;background:var(--teal);color:#fff;font-weight:700;font-size:0.85rem;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">Next Case Study: Credit Risk →</a>
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.15);color:#fff;font-weight:600;font-size:0.85rem;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">← Portfolio Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── DISCLAIMER ─────────────────────────────────── -->
+<footer class="disclaimer">
+  <div class="container">
+    <p>This case study is prepared by Kartik Mankar for portfolio purposes. All product and company information is presented at a high level and does not disclose proprietary or confidential technical details. Outcome metrics are reported at the project level; individual attribution is not claimed. Proposed improvements represent personal product thinking and are not representations of existing or planned product capabilities.</p>
+    <p style="margin-top:8px;">© 2026 Kartik Mankar · PM Portfolio</p>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    const sections = document.querySelectorAll('section[id]');
+    const pills = document.querySelectorAll('.fw-pill');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          pills.forEach(pill => {
+            if (pill.getAttribute('href') === `#${id}`) {
+              pill.classList.add('active');
+            } else {
+              pill.classList.remove('active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.25, rootMargin: '-60px 0px -40% 0px' });
+
+    sections.forEach(s => observer.observe(s));
+  })();
+</script>
+</body>
+</html>
